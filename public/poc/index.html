@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Rachio Winterize POC</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <link rel="stylesheet" href="css/normalize.css">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<div id="wrapper">
+  <h1>Rachio Winterize - Proof of concept</h1>
+  <p>At the moment, this is all static&mdash;no data binding nor dynamic UI. Open your browser console to see logging.</p>
+  <ol>
+    <li>Enter API key and click the "Fetch" button</li>
+    <li>Click "Winterize" to begin the blow out process</li>
+    <li>Click "Cancel" anytime to stop the blow out process </li>
+  </ol>
+
+  <div class="row">
+    <label for="api-key">API Token <small><a href="https://rachio.readme.io/docs/authentication" target="_blank">locate your token</a></small></label>
+    <input id="api-key" type="text" value=""/>
+    <button type="button" id="fetch-api">Fetch</button>
+    <p><small>Your Rachio API token is never stored on the server and only used for the duration of your session. Accessing the site over a public network is not recommended.</small></p>
+  </div>
+
+  <div class="row">
+    <label for="time-to-blow">Time to blow out each zone</label>
+    <input id="time-to-blow" type="number" value="10" /> seconds
+  </div>
+
+  <div class="row">
+    <label for="time-to-recover">Time for air compressor recovery</label>
+    <input id="time-to-recover" type="number" value="10" /> seconds
+  </div>
+
+  <div class="row">
+    <label for="cycles">Cycles to run</label>
+    <input id="cycles" type="number" value="1" /> cycles
+  </div>
+
+  <!--
+  <table>
+    <caption>Irrigation zones</caption>
+    <thead>
+      <tr>
+        <th><input type="checkbox" /></th>
+        <th>Zone</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><input type="checkbox" id="" /></td>
+        <td>Name of zone</td>
+      </tr>
+    </tbody>
+  </table>
+  -->
+
+  <button type="button" id="run-winterize">Winterize</button>
+  <button type="button" id="cancel-winterize">Cancel</button>
+</div>
+
+<script src="js/app.js"></script>
+</body>
+</html>
