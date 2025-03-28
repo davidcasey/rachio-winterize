@@ -1,4 +1,6 @@
 import type { Metadata } from 'next';
+import { WakeLockProvider } from 'app/components/providers/WakeLockProvider';
+
 import { Geist, Geist_Mono } from 'next/font/google';
 import 'app/globals.css';
 
@@ -17,14 +19,11 @@ export const metadata: Metadata = {
   description: "Winterize your Rachio irrigation system with ease.",
 };
 
-export default function RootLayout({
-  children,
-}: Readonly<{
-  children: React.ReactNode;
-}>) {
+export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="en" suppressHydrationWarning>
       <body className={`${geistSans.variable} ${geistMono.variable}`}>
+        <WakeLockProvider />
         {children}
       </body>
     </html>
