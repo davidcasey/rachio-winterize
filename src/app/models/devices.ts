@@ -4,6 +4,8 @@ export type Zone = {
   imageUrl: string;
   enabled: boolean;
   zoneNumber: number;
+  blowOutTime: number;
+  recoveryTime: number;
 };
 
 export type Device = {

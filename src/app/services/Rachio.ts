@@ -18,7 +18,6 @@ const getPersonEntity = async (): Promise<Entity> => {
       Authorization: `Bearer ${API_KEY}`,
     },
   });
-  console.log(`Response: ${response.status} ${response.statusText}`);
 
   if (!response.ok) {
     throw new Error(`Error getting person entity: ${response.status}`);
@@ -26,7 +25,6 @@ const getPersonEntity = async (): Promise<Entity> => {
 
   return response.json();
 };
-
 
 /**
  * Retrieve the information for a person entity

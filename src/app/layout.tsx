@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import { WakeLockProvider } from 'app/components/providers/WakeLockProvider';
+import { WakeLockProvider } from 'app/providers/WakeLockProvider';
 
 import { Geist, Geist_Mono } from 'next/font/google';
 import 'app/globals.css';
