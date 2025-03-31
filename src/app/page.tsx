@@ -4,10 +4,10 @@ import { useState } from 'react';
 
 import { getDeviceInfo, getPersonEntity } from 'app/services/rachio';
 import { Device } from 'app/models/devices';
-import { ZoneSettingsTable } from 'app/components/ZoneSettings/ZoneSettingsTable';
+import { ZoneSettings } from 'app/components/ZoneSettings/ZoneSettings';
 
 export default function Home() {
-  const [deviceActiveZones, setDeviceActiveZones] = useState<Device[]>([]);
+  const [devices, setDevices] = useState<Device[]>([]);
 
   function initializeData() {
     getPersonEntity().then(entity => {
@@ -21,53 +21,10 @@ export default function Home() {
             zones: device.zones.filter(zone => zone.enabled).sort((a, b) => a.zoneNumber - b.zoneNumber),
           }
         });
-        setDeviceActiveZones(deviceActiveZones);
+        setDevices(deviceActiveZones);
       });
     }
   )}
-
-  function DeviceInfoJSX() {
-    return (
-      <div>
-        <br /><br /><h2>Device Info</h2>
-        <table>
-          <thead>
-            <tr>
-              <th>Device Name</th>
-              <th>Device ID</th>
-              <th>Latitude</th>
-              <th>Longitude</th>
-            </tr>
-          </thead>
-          <tbody>
-            {Array.isArray(deviceActiveZones) && deviceActiveZones.map((device, index) => (
-              <tr key={index}>
-                <td>{device.name}</td>
-                <td>{device.id}</td>
-                <td>{device.latitude}</td>
-                <td>{device.longitude}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
-    );
-  }
-
-  function ZoneSettings() {
-    // TODO: Dropdown for multiple devices if deviceActiveZones.length > 1
-    // TODO: Add how many times to cycle through the zones
-    return (
-      <>
-        {Array.isArray(deviceActiveZones) && deviceActiveZones.map((device, deviceIndex) => (
-          <div key={deviceIndex}>
-            <h2>{device.name}</h2>
-            <ZoneSettingsTable zones={device.zones} key={deviceIndex} />
-          </div>
-        ))}
-      </>
-    );
-  }
 
   return (
     <>
@@ -96,7 +53,7 @@ export default function Home() {
       </p>
       <br /><br />
 
-      <ZoneSettings />
+      {devices.length > 0 && <ZoneSettings devices={devices} />}
     </>
   );
 }
