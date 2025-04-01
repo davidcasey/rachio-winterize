@@ -1,20 +1,23 @@
 import { JSX, useState } from 'react';
-import { Zone } from 'app/models/devices';
+
+import { WinterizeAction } from 'app/models/winterizeModels';
 
 /**
- * ZoneSettingsRow component
- * This component allows the user to select how much time will be spent blowing out the zone, and 
- * how much time will be spent allowing the air compressor to recharge.
+ * WinterizeActionUI component
+ * This component allows the user to select how much time will be spent on the following:
+ * - selected: if it is selected for the winterize sequence
+ * - blowOutTime: how long to blow out the sprinkler zone with air
+ * - recoveryTime: how long the air compressor will take to recover
  * 
  * @returns JSX.Element
  */
 
-export type ZoneSettingsRowProps = {
-  zone: Zone;
+export type WinterizeActionUIProps = {
+  action: WinterizeAction;
 }
 
-export const ZoneSettingsRow = ({ zone }: ZoneSettingsRowProps): JSX.Element => {
-  const [selected, setSelected] = useState(true);
+export const WinterizeActionUI = ({ action }: WinterizeActionUIProps): JSX.Element => {
+  const [selected, setSelected] = useState(action.selected);
   const [blowOutTime, setBlowOutTime] = useState(35);
   const [recoveryTime, setRecoveryTime] = useState(300);
 
@@ -29,10 +32,13 @@ export const ZoneSettingsRow = ({ zone }: ZoneSettingsRowProps): JSX.Element => 
   return (
     <tr>
       <td>
+        {/* { isActive } */}
+      </td>
+      <td>
         <input type='checkbox' checked={selected} onChange={() => setSelected(!selected)} />
       </td>
       <td>
-        { zone.name }
+        { action.name }
       </td>
       <td>
         <input type="number" value={blowOutTime} onChange={handleBlowOutTimeChange} />

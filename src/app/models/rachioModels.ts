@@ -1,11 +1,15 @@
+export type Entity = {
+  token: string;
+  id: string;
+  fullName: string;
+};
+
 export type Zone = {
   name: string;
   id: string;
   imageUrl: string;
   enabled: boolean;
   zoneNumber: number;
-  blowOutTime: number;
-  recoveryTime: number;
 };
 
 export type Device = {

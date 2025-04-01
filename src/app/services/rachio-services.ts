@@ -1,5 +1,4 @@
-import { DeviceInfo } from 'app/models/devices';
-import { Entity } from 'app/models/entity';
+import { Entity, DeviceInfo } from 'app/models/rachioModels';
 
 const API_KEY = process.env.NEXT_PUBLIC_API_KEY;
 const API_BASE_URL = process.env.NEXT_PUBLIC_RACHIO_API_BASE_URL;

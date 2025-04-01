@@ -2,12 +2,15 @@
 
 import { useState } from 'react';
 
-import { getDeviceInfo, getPersonEntity } from 'app/services/rachio';
-import { Device } from 'app/models/devices';
-import { ZoneSettings } from 'app/components/ZoneSettings/ZoneSettings';
+import { WinterizeContext } from 'app/context/WinterizeContext';
+import { getDeviceInfo, getPersonEntity } from 'app/services/rachio-services';
+import { Device } from 'app/models/rachioModels';
+import { WinterizeSequenceUI } from 'app/components/WinterizeControl/WinterizeSequenceUI';
+import { WinterizeSequence } from 'app/models/winterizeModels';
 
 export default function Home() {
   const [devices, setDevices] = useState<Device[]>([]);
+  const [winterizeSequence, setWinterizeSequence] = useState<WinterizeSequence | undefined>(undefined);
 
   function initializeData() {
     getPersonEntity().then(entity => {
@@ -40,6 +43,7 @@ export default function Home() {
         <li>Default time for air compressor recovery: 300 seconds</li>
       </ul>
       <br /><br />
+      {/* TODO: set default blowout time and recovery time */}
       
       <label htmlFor="api-key">API Token 
         <small><a href="https://rachio.readme.io/docs/authentication" target="_blank">locate your token</a></small>
@@ -53,7 +57,9 @@ export default function Home() {
       </p>
       <br /><br />
 
-      {devices.length > 0 && <ZoneSettings devices={devices} />}
+      <WinterizeContext.Provider value={{ winterizeSequence, setWinterizeSequence }}>
+        {devices.length > 0 && <WinterizeSequenceUI devices={devices} />}
+      </WinterizeContext.Provider>
     </>
   );
 }

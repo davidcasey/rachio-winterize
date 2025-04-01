@@ -1,5 +1,5 @@
 import { JSX } from 'react';
-import { Device } from 'app/models/devices';
+import { Device } from 'app/models/rachioModels';
 
 export type DeviceInfoProps = {
   devices: Device[];
