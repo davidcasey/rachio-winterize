@@ -3,8 +3,6 @@ import { JSX, useContext, useEffect, useState } from 'react';
 import { Device, Zone } from 'app/models/rachioModels';
 import { WinterizeContext } from 'app/context/WinterizeContext';
 import { CycleSelector } from 'app/components/WinterizeControl/CycleSelector';
-import { DefaultBlowOutTime } from 'app/components/WinterizeControl/DefaultBlowOutTime';
-import { DefaultRecoveryTime } from 'app/components/WinterizeControl/DefaultRecoveryTime';
 
 export type DeviceSelectorProps = {
   devices: Device[];
@@ -60,8 +58,6 @@ export const DeviceSelector = ({ devices }: DeviceSelectorProps): JSX.Element =>
       {/* )} */}
       {/* TODO: remove cycle selector for a button to add cycle, duplicating previous cycle */}
       <CycleSelector onChange={setCycles} />
-      <DefaultBlowOutTime />
-      <DefaultRecoveryTime />
     </>
   );
 }

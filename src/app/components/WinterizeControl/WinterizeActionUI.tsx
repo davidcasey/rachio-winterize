@@ -18,10 +18,10 @@ export type WinterizeActionUIProps = {
 }
 
 export const WinterizeActionUI = ({ action }: WinterizeActionUIProps): JSX.Element => {
-  const {winterizeDefaults} = useContext(WinterizeDefaultsContext);
+  const {winterizeSettings} = useContext(WinterizeDefaultsContext);
   const [selected, setSelected] = useState(action.selected);
-  const [blowOutTime, setBlowOutTime] = useState(winterizeDefaults.blowOutTime);
-  const [recoveryTime, setRecoveryTime] = useState(winterizeDefaults.recoveryTime);
+  const [blowOutTime, setBlowOutTime] = useState(winterizeSettings.blowOutTime);
+  const [recoveryTime, setRecoveryTime] = useState(winterizeSettings.recoveryTime);
 
   const handleBlowOutTimeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setBlowOutTime(Number(e.target.value));

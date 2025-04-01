@@ -1,6 +1,6 @@
 import { Zone } from 'app/models/rachioModels';
 
-export type WinterizeDefaults = {
+export type WinterizeSettings = {
   blowOutTime: number;
   recoveryTime: number;
 }

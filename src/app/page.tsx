@@ -4,14 +4,14 @@ import { useState } from 'react';
 
 import { getDeviceInfo, getPersonEntity } from 'app/services/rachio-services';
 import { Device } from 'app/models/rachioModels';
-import { WinterizeDefaults, WinterizeSequence } from 'app/models/winterizeModels';
-import { WinterizeDefaultsContext, winterizeDefaultsValue } from 'app/context/WinterizeDefaultsContext';
+import { WinterizeSettings, WinterizeSequence } from 'app/models/winterizeModels';
+import { WinterizeDefaultsContext, winterizeSettingsDefault } from 'app/context/WinterizeDefaultsContext';
 import { WinterizeContext } from 'app/context/WinterizeContext';
 import { WinterizeSequenceUI } from 'app/components/WinterizeControl/WinterizeSequenceUI';
 
 export default function Home() {
   const [devices, setDevices] = useState<Device[]>([]);
-  const [winterizeDefaults, setWinterizeDefaults] = useState<WinterizeDefaults>(winterizeDefaultsValue);
+  const [winterizeSettings, setWinterizeSettings] = useState<WinterizeSettings>(winterizeSettingsDefault);
   const [winterizeSequence, setWinterizeSequence] = useState<WinterizeSequence | undefined>(undefined);
 
   function initializeData() {
@@ -59,7 +59,7 @@ export default function Home() {
       </p>
       <br /><br />
 
-      <WinterizeDefaultsContext.Provider value={{ winterizeDefaults, setWinterizeDefaults }}>
+      <WinterizeDefaultsContext.Provider value={{ winterizeSettings, setWinterizeSettings }}>
         <WinterizeContext.Provider value={{ winterizeSequence, setWinterizeSequence }}>
           {devices.length > 0 && <WinterizeSequenceUI devices={devices} />}
         </WinterizeContext.Provider>
