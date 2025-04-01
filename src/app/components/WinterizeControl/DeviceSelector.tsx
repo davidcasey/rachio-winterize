@@ -2,6 +2,7 @@ import { JSX, useContext, useEffect, useState } from 'react';
 
 import { Device, Zone } from 'app/models/rachioModels';
 import { WinterizeContext } from 'app/context/WinterizeContext';
+import { CycleSelector } from 'app/components/WinterizeControl/CycleSelector';
 
 export type DeviceSelectorProps = {
   devices: Device[];
@@ -44,26 +45,6 @@ export const DeviceSelector = ({ devices }: DeviceSelectorProps): JSX.Element =>
     setSelectedDevice(devices[e.target.selectedIndex - 1]);
   }
 
-  function renderCycleSelector() {
-    return (
-      <div>
-        <label htmlFor="cycles">Cycles </label>
-        <select
-          id="cycles"
-          onChange={(e) => {
-            setCycles(Number(e.target.value));
-          }}
-        >
-          {[1, 2, 3, 4, 5].map((cycle) => (
-            <option key={cycle} value={cycle}>
-              {cycle}
-            </option>
-          ))}
-        </select>
-      </div>
-    );
-  }
-
   return (
     <div>
       {/* {devices.length > 1 && ( */}
@@ -75,7 +56,8 @@ export const DeviceSelector = ({ devices }: DeviceSelectorProps): JSX.Element =>
           ))}
         </select>
       {/* )} */}
-      {renderCycleSelector()}
+      {/* TODO: remove cycle selector for a button to add cycle, duplicating previous cycle */}
+      <CycleSelector onChange={setCycles} />
     </div>
   );
 }

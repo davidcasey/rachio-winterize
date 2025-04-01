@@ -3,7 +3,6 @@ import { Zone } from 'app/models/rachioModels';
 export type WinterizeDefaults = {
   blowOutTime: number;
   recoveryTime: number;
-  cycles: number;
 }
 
 export type WinterizeAction = {
