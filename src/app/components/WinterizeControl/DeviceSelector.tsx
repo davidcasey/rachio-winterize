@@ -3,17 +3,19 @@ import { JSX, useContext, useEffect, useState } from 'react';
 import { Device, Zone } from 'app/models/rachioModels';
 import { WinterizeContext } from 'app/context/WinterizeContext';
 import { CycleSelector } from 'app/components/WinterizeControl/CycleSelector';
+import { DefaultBlowOutTime } from 'app/components/WinterizeControl/DefaultBlowOutTime';
+import { DefaultRecoveryTime } from 'app/components/WinterizeControl/DefaultRecoveryTime';
 
 export type DeviceSelectorProps = {
   devices: Device[];
 }
 
 export const DeviceSelector = ({ devices }: DeviceSelectorProps): JSX.Element => {
-  const { setWinterizeSequence} = useContext(WinterizeContext);
+  const {setWinterizeSequence} = useContext(WinterizeContext);
 
   const [selectedDevice, setSelectedDevice] = useState<Device | null>(devices.length > 1 ? null : devices[0]);
   // const [selectedDevice, setSelectedDevice] = useState<Device | null>(null);
-  const [cycles, setCycles] = useState<number>(1);
+  const [cycles, setCycles] = useState<number>(0);
 
   useEffect(() => {
     // console.log('Selected Device:', selectedDevice);
@@ -46,7 +48,7 @@ export const DeviceSelector = ({ devices }: DeviceSelectorProps): JSX.Element =>
   }
 
   return (
-    <div>
+    <>
       {/* {devices.length > 1 && ( */}
         <select onChange={(e) => {handleSelectedDevice(e)}}>
           {Array.isArray(devices) && devices.map((device, index) => (
@@ -58,6 +60,8 @@ export const DeviceSelector = ({ devices }: DeviceSelectorProps): JSX.Element =>
       {/* )} */}
       {/* TODO: remove cycle selector for a button to add cycle, duplicating previous cycle */}
       <CycleSelector onChange={setCycles} />
-    </div>
+      <DefaultBlowOutTime />
+      <DefaultRecoveryTime />
+    </>
   );
 }

@@ -14,7 +14,7 @@ export const CycleSelector = ({ onChange }: CycleSelectorProps): JSX.Element => 
           onChange(Number(e.target.value));
         }}
       >
-        {[1, 2, 3, 4, 5].map((cycle) => (
+        {[0, 1, 2, 3, 4, 5].map((cycle) => (
           <option key={cycle} value={cycle}>
             {cycle}
           </option>
