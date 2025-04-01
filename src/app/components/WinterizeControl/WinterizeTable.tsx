@@ -3,7 +3,7 @@ import { JSX, useContext } from 'react';
 import { Device } from 'app/models/rachioModels';
 import { WinterizeAction } from 'app/models/winterizeModels';
 import { WinterizeContext } from 'app/context/WinterizeContext';
-import { WinterizeActionUI } from 'app/components/WinterizeControl/WinterizeActionUI';
+import { WinterizeActionRow } from 'app/components/WinterizeControl/WinterizeActionRow';
 import { DeviceSelector } from 'app/components/WinterizeControl/DeviceSelector';
 import { BlowOutTime } from 'app/components/WinterizeControl/BlowOutTime';
 import { RecoveryTime } from 'app/components/WinterizeControl/RecoveryTime';
@@ -12,10 +12,10 @@ export type WinterizeSequenceUIProps = {
   devices: Device[];
 }
 
-export const WinterizeSequenceUI = ({ devices }: WinterizeSequenceUIProps): JSX.Element => {
+export const WinterizeTable = ({ devices }: WinterizeSequenceUIProps): JSX.Element => {
   const { winterizeSequence } = useContext(WinterizeContext);
 
-  function renderWinterizeSequenceTable() {
+  function renderWinterizeSequence() {
     return winterizeSequence && (
       <>
         <h2>{winterizeSequence.name}</h2>
@@ -34,7 +34,8 @@ export const WinterizeSequenceUI = ({ devices }: WinterizeSequenceUIProps): JSX.
           <tbody>
             {
               winterizeSequence.actions.map((action: WinterizeAction) => (
-                <WinterizeActionUI action={action} key={`${action.id}`} />
+                <WinterizeActionRow action={action} key={`${action.id}`}
+                />
               ))
             }
           </tbody>
@@ -59,7 +60,8 @@ export const WinterizeSequenceUI = ({ devices }: WinterizeSequenceUIProps): JSX.
   return (
     <>
       <DeviceSelector devices={devices} />
-      {renderWinterizeSequenceTable()}
+      {renderWinterizeSequence()}
+      <button type="button" onClick={() => {console.log(winterizeSequence)}}>Winterize Sequence</button>
     </>
   );
 }

@@ -1,10 +1,10 @@
-import { JSX, useState, useContext } from 'react';
+import { JSX, useEffect, useState, useContext } from 'react';
 
 import { WinterizeAction } from 'app/models/winterizeModels';
-import { WinterizeSettingsContext } from 'app/context/WinterizeSettingsContext';
+import { WinterizeContext } from 'app/context/WinterizeContext';
 
 /**
- * WinterizeActionUI component
+ * WinterizeActionRow component
  * This component allows the user to select how much time will be spent on the following:
  * - selected: if it is selected for the winterize sequence
  * - blowOutTime: how long to blow out the sprinkler zone with air
@@ -17,11 +17,31 @@ export type WinterizeActionUIProps = {
   action: WinterizeAction;
 }
 
-export const WinterizeActionUI = ({ action }: WinterizeActionUIProps): JSX.Element => {
-  const {winterizeSettings} = useContext(WinterizeSettingsContext);
+export const WinterizeActionRow = ({ action }: WinterizeActionUIProps): JSX.Element => {
+  const { winterizeSequence, setWinterizeSequence } = useContext(WinterizeContext);
   const [selected, setSelected] = useState(action.selected);
-  const [blowOutTime, setBlowOutTime] = useState(winterizeSettings.blowOutTime);
-  const [recoveryTime, setRecoveryTime] = useState(winterizeSettings.recoveryTime);
+  const [blowOutTime, setBlowOutTime] = useState(action.blowOutTime);
+  const [recoveryTime, setRecoveryTime] = useState(action.recoveryTime);
+
+  useEffect(() => {
+    handleActionChange({
+      ...action,
+      selected,
+      blowOutTime,
+      recoveryTime,
+    });
+  }, [selected, blowOutTime, recoveryTime]);
+
+  function handleActionChange(action: WinterizeAction) {
+    if (!winterizeSequence) return;
+    const updatedActions = winterizeSequence.actions.map((a) => {
+      return a.id === action.id ? action : a;
+    });
+    setWinterizeSequence({
+      ...winterizeSequence,
+      actions: updatedActions,
+    });
+  }
 
   const handleBlowOutTimeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setBlowOutTime(Number(e.target.value));

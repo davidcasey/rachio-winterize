@@ -7,7 +7,7 @@ import { Device } from 'app/models/rachioModels';
 import { WinterizeSettings, WinterizeSequence } from 'app/models/winterizeModels';
 import { WinterizeSettingsContext, winterizeSettingsDefault } from 'app/context/WinterizeSettingsContext';
 import { WinterizeContext } from 'app/context/WinterizeContext';
-import { WinterizeSequenceUI } from 'app/components/WinterizeControl/WinterizeSequenceUI';
+import { WinterizeTable } from 'app/components/WinterizeControl/WinterizeTable';
 
 export default function Home() {
   const [devices, setDevices] = useState<Device[]>([]);
@@ -61,7 +61,7 @@ export default function Home() {
 
       <WinterizeSettingsContext.Provider value={{ winterizeSettings, setWinterizeSettings }}>
         <WinterizeContext.Provider value={{ winterizeSequence, setWinterizeSequence }}>
-          {devices.length > 0 && <WinterizeSequenceUI devices={devices} />}
+          {devices.length > 0 && <WinterizeTable devices={devices} />}
         </WinterizeContext.Provider>
       </WinterizeSettingsContext.Provider>
     </>

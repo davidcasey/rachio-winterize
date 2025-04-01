@@ -1,6 +1,7 @@
 import { JSX, useContext, useEffect, useState } from 'react';
 
 import { Device, Zone } from 'app/models/rachioModels';
+import { WinterizeSettingsContext } from 'app/context/WinterizeSettingsContext';
 import { WinterizeContext } from 'app/context/WinterizeContext';
 import { CycleSelector } from 'app/components/WinterizeControl/CycleSelector';
 
@@ -10,6 +11,7 @@ export type DeviceSelectorProps = {
 
 export const DeviceSelector = ({ devices }: DeviceSelectorProps): JSX.Element => {
   const {setWinterizeSequence} = useContext(WinterizeContext);
+  const {winterizeSettings} = useContext(WinterizeSettingsContext);
 
   const [selectedDevice, setSelectedDevice] = useState<Device | null>(devices.length > 1 ? null : devices[0]);
   // const [selectedDevice, setSelectedDevice] = useState<Device | null>(null);
@@ -26,8 +28,8 @@ export const DeviceSelector = ({ devices }: DeviceSelectorProps): JSX.Element =>
           name: zone.name,
           active: false,
           selected: true,
-          blowOutTime: 35,
-          recoveryTime: 300,
+          blowOutTime: winterizeSettings.blowOutTime,
+          recoveryTime: winterizeSettings.recoveryTime,
           zone,
         }
       })
