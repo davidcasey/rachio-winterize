@@ -1,6 +1,6 @@
 import { JSX, useContext } from 'react';
 
-import { WinterizeDefaultsContext } from 'app/context/WinterizeDefaultsContext';
+import { WinterizeDefaultsContext } from 'app/context/WinterizeSettingsContext';
 
 export const DefaultRecoveryTime = (): JSX.Element => {
   const {winterizeDefaults, setWinterizeDefaults} = useContext(WinterizeDefaultsContext);

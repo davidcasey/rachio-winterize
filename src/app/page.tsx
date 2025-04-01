@@ -5,7 +5,7 @@ import { useState } from 'react';
 import { getDeviceInfo, getPersonEntity } from 'app/services/rachio-services';
 import { Device } from 'app/models/rachioModels';
 import { WinterizeSettings, WinterizeSequence } from 'app/models/winterizeModels';
-import { WinterizeDefaultsContext, winterizeSettingsDefault } from 'app/context/WinterizeDefaultsContext';
+import { WinterizeDefaultsContext, winterizeSettingsDefault } from 'app/context/WinterizeSettingsContext';
 import { WinterizeContext } from 'app/context/WinterizeContext';
 import { WinterizeSequenceUI } from 'app/components/WinterizeControl/WinterizeSequenceUI';
 

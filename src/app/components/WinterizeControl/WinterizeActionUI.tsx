@@ -1,7 +1,7 @@
 import { JSX, useState, useContext } from 'react';
 
 import { WinterizeAction } from 'app/models/winterizeModels';
-import { WinterizeDefaultsContext } from 'app/context/WinterizeDefaultsContext';
+import { WinterizeDefaultsContext } from 'app/context/WinterizeSettingsContext';
 
 /**
  * WinterizeActionUI component
