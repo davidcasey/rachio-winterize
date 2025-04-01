@@ -2,7 +2,7 @@ import { createContext, Dispatch, SetStateAction } from 'react';
 
 import { WinterizeSettings } from 'app/models/winterizeModels';
 
-export type WinterizeDefaultsContextType = {
+export type WinterizeSettingsContextType = {
   winterizeSettings: WinterizeSettings;
   setWinterizeSettings: Dispatch<SetStateAction<WinterizeSettings>>;
 }
@@ -10,9 +10,11 @@ export type WinterizeDefaultsContextType = {
 export const winterizeSettingsDefault: WinterizeSettings = {
   blowOutTime: 35,
   recoveryTime: 300,
+  selectedDevice: null,
+  activeAction: null,
 };
 
-export const WinterizeDefaultsContext = createContext<WinterizeDefaultsContextType>({
+export const WinterizeSettingsContext = createContext<WinterizeSettingsContextType>({
   winterizeSettings: winterizeSettingsDefault,
   setWinterizeSettings: () => {},
 });

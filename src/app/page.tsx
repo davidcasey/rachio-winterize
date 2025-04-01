@@ -5,7 +5,7 @@ import { useState } from 'react';
 import { getDeviceInfo, getPersonEntity } from 'app/services/rachio-services';
 import { Device } from 'app/models/rachioModels';
 import { WinterizeSettings, WinterizeSequence } from 'app/models/winterizeModels';
-import { WinterizeDefaultsContext, winterizeSettingsDefault } from 'app/context/WinterizeSettingsContext';
+import { WinterizeSettingsContext, winterizeSettingsDefault } from 'app/context/WinterizeSettingsContext';
 import { WinterizeContext } from 'app/context/WinterizeContext';
 import { WinterizeSequenceUI } from 'app/components/WinterizeControl/WinterizeSequenceUI';
 
@@ -59,11 +59,11 @@ export default function Home() {
       </p>
       <br /><br />
 
-      <WinterizeDefaultsContext.Provider value={{ winterizeSettings, setWinterizeSettings }}>
+      <WinterizeSettingsContext.Provider value={{ winterizeSettings, setWinterizeSettings }}>
         <WinterizeContext.Provider value={{ winterizeSequence, setWinterizeSequence }}>
           {devices.length > 0 && <WinterizeSequenceUI devices={devices} />}
         </WinterizeContext.Provider>
-      </WinterizeDefaultsContext.Provider>
+      </WinterizeSettingsContext.Provider>
     </>
   );
 }

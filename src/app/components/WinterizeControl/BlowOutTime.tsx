@@ -1,14 +1,14 @@
 import { JSX, useContext } from 'react';
 
-import { WinterizeDefaultsContext } from 'app/context/WinterizeSettingsContext';
+import { WinterizeSettingsContext } from 'app/context/WinterizeSettingsContext';
 
-export const DefaultBlowOutTime = (): JSX.Element => {
-  const {winterizeDefaults, setWinterizeDefaults} = useContext(WinterizeDefaultsContext);
+export const BlowOutTime = (): JSX.Element => {
+  const {winterizeSettings, setWinterizeSettings} = useContext(WinterizeSettingsContext);
 
   function handleChange(blowOutTime: number) {
-    if (winterizeDefaults) {
-      setWinterizeDefaults({
-        ...winterizeDefaults,
+    if (winterizeSettings) {
+      setWinterizeSettings({
+        ...winterizeSettings,
         blowOutTime,
       });
     }
@@ -20,7 +20,7 @@ export const DefaultBlowOutTime = (): JSX.Element => {
       <input
         type="number"
         id="default-blow-out-time"
-        value={winterizeDefaults?.blowOutTime}
+        value={winterizeSettings?.blowOutTime}
         onChange={(e) => {
           handleChange(Number(e.target.value));
         }}

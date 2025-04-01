@@ -1,14 +1,14 @@
 import { JSX, useContext } from 'react';
 
-import { WinterizeDefaultsContext } from 'app/context/WinterizeSettingsContext';
+import { WinterizeSettingsContext } from 'app/context/WinterizeSettingsContext';
 
-export const DefaultRecoveryTime = (): JSX.Element => {
-  const {winterizeDefaults, setWinterizeDefaults} = useContext(WinterizeDefaultsContext);
+export const RecoveryTime = (): JSX.Element => {
+  const {winterizeSettings, setWinterizeSettings} = useContext(WinterizeSettingsContext);
 
   function handleChange(recoveryTime: number) {
-    if (winterizeDefaults) {
-      setWinterizeDefaults({
-        ...winterizeDefaults,
+    if (winterizeSettings) {
+      setWinterizeSettings({
+        ...winterizeSettings,
         recoveryTime,
       });
     }
@@ -20,7 +20,7 @@ export const DefaultRecoveryTime = (): JSX.Element => {
       <input
         type="number"
         id="default-recovery-time"
-        value={winterizeDefaults?.recoveryTime}
+        value={winterizeSettings?.recoveryTime}
         onChange={(e) => {
           handleChange(Number(e.target.value));
         }}

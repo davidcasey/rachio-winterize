@@ -5,8 +5,8 @@ import { WinterizeAction } from 'app/models/winterizeModels';
 import { WinterizeContext } from 'app/context/WinterizeContext';
 import { WinterizeActionUI } from 'app/components/WinterizeControl/WinterizeActionUI';
 import { DeviceSelector } from 'app/components/WinterizeControl/DeviceSelector';
-import { DefaultBlowOutTime } from 'app/components/WinterizeControl/DefaultBlowOutTime';
-import { DefaultRecoveryTime } from 'app/components/WinterizeControl/DefaultRecoveryTime';
+import { BlowOutTime } from 'app/components/WinterizeControl/BlowOutTime';
+import { RecoveryTime } from 'app/components/WinterizeControl/RecoveryTime';
 
 export type WinterizeSequenceUIProps = {
   devices: Device[];
@@ -44,10 +44,10 @@ export const WinterizeSequenceUI = ({ devices }: WinterizeSequenceUIProps): JSX.
                 <button type="button" onClick={() => {}}>Add cycle</button>
               </td>
               <td>
-                <DefaultBlowOutTime />
+                <BlowOutTime />
               </td>
               <td>
-                <DefaultRecoveryTime />
+                <RecoveryTime />
               </td>
             </tr>
           </tfoot>

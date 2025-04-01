@@ -1,7 +1,7 @@
 import { JSX, useState, useContext } from 'react';
 
 import { WinterizeAction } from 'app/models/winterizeModels';
-import { WinterizeDefaultsContext } from 'app/context/WinterizeSettingsContext';
+import { WinterizeSettingsContext } from 'app/context/WinterizeSettingsContext';
 
 /**
  * WinterizeActionUI component
@@ -18,7 +18,7 @@ export type WinterizeActionUIProps = {
 }
 
 export const WinterizeActionUI = ({ action }: WinterizeActionUIProps): JSX.Element => {
-  const {winterizeSettings} = useContext(WinterizeDefaultsContext);
+  const {winterizeSettings} = useContext(WinterizeSettingsContext);
   const [selected, setSelected] = useState(action.selected);
   const [blowOutTime, setBlowOutTime] = useState(winterizeSettings.blowOutTime);
   const [recoveryTime, setRecoveryTime] = useState(winterizeSettings.recoveryTime);
