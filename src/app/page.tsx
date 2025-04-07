@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 
-import { getDeviceInfo, getPersonEntity } from 'app/services/rachio-services';
+import { fetchDeviceInfo, fetchPersonEntity } from 'app/services/rachio-services';
 import { Device } from 'app/models/rachioModels';
 import { WinterizeSettings, WinterizeSequence } from 'app/models/winterizeModels';
 import { WinterizeSettingsContext, winterizeSettingsDefault } from 'app/context/WinterizeSettingsContext';
@@ -15,8 +15,8 @@ export default function Home() {
   const [winterizeSequence, setWinterizeSequence] = useState<WinterizeSequence | undefined>(undefined);
 
   function initializeData() {
-    getPersonEntity().then(entity => {
-      getDeviceInfo(entity.id).then(info => {
+    fetchPersonEntity().then(entity => {
+      fetchDeviceInfo(entity.id).then(info => {
         let deviceActiveZones = info.devices.map(device => {
           return {
             name: device.name,
@@ -45,7 +45,6 @@ export default function Home() {
         <li>Default time for air compressor recovery: 300 seconds</li>
       </ul>
       <br /><br />
-      {/* TODO: set default blowout time and recovery time */}
       
       <label htmlFor="api-key">API Token 
         <small><a href="https://rachio.readme.io/docs/authentication" target="_blank">locate your token</a></small>

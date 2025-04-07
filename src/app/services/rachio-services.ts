@@ -1,15 +1,18 @@
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Entity, DeviceInfo } from 'app/models/rachioModels';
 
 const API_KEY = process.env.NEXT_PUBLIC_API_KEY;
 const API_BASE_URL = process.env.NEXT_PUBLIC_RACHIO_API_BASE_URL;
 
+if (!API_KEY || !API_BASE_URL) {
+  throw new Error('API_KEY or API_BASE_URL is not defined in environment variables.');
+}
+
 /**
- * Retrieve the id for the person entity currently logged in through OAuth.
- * @returns Promise<Entity> The person entity information or an error if the request fails
- * @throws Error if the request fails
+ * Fetch the person entity currently logged in through OAuth.
  */
-const getPersonEntity = async (): Promise<Entity> => {
-  const response = await fetch(`${API_BASE_URL}/person/info`,  {
+export const fetchPersonEntity = async (): Promise<Entity> => {
+  const response = await fetch(`${API_BASE_URL}/person/info`, {
     method: 'GET',
     cache: 'no-cache',
     credentials: 'include',
@@ -26,13 +29,10 @@ const getPersonEntity = async (): Promise<Entity> => {
 };
 
 /**
- * Retrieve the information for a person entity
- * @param entityId The id of the person entity
- * @returns Promise<DeviceInfo>} The device information or an error if the request fails
- * @throws Error if the request fails
+ * Fetch the device information for a person entity.
  */
-const getDeviceInfo = async (entityId: string): Promise<DeviceInfo> => {
-  const response = await fetch(`${API_BASE_URL}/person/${entityId}`,  {
+export const fetchDeviceInfo = async (entityId: string): Promise<DeviceInfo> => {
+  const response = await fetch(`${API_BASE_URL}/person/${entityId}`, {
     method: 'GET',
     cache: 'no-cache',
     credentials: 'include',
@@ -45,15 +45,14 @@ const getDeviceInfo = async (entityId: string): Promise<DeviceInfo> => {
     throw new Error(`Error getting device info: ${response.status}`);
   }
 
-  return await response.json();
+  return response.json();
 };
 
 /**
- * Stop all watering on device
- * @param deviceId The device's unique id
+ * Stop all watering on a device.
  */
-const deviceStopWater = (deviceId: string): void => {
-  fetch(`${API_BASE_URL}/device/stop_water`,  {
+export const stopWatering = async (deviceId: string): Promise<void> => {
+  const response = await fetch(`${API_BASE_URL}/device/stop_water`, {
     method: 'PUT',
     mode: 'cors',
     cache: 'no-cache',
@@ -61,21 +60,19 @@ const deviceStopWater = (deviceId: string): void => {
     headers: {
       Authorization: `Bearer ${API_KEY}`,
     },
-    body: JSON.stringify({
-      id: deviceId
-    }),
-  }).catch((error) => {
-    throw new Error(`Error stopping watering: ${error}`);
+    body: JSON.stringify({ id: deviceId }),
   });
+
+  if (!response.ok) {
+    throw new Error(`Error stopping watering: ${response.status}`);
+  }
 };
 
 /**
- * Start a zone
- * @param zoneId The zone's unique id
- * @param duration Duration in seconds (Range is 0 - 10800 (3 Hours) )
+ * Start a zone for a specific duration.
  */
-const zoneStart = (zoneId: string, duration: number): void => {
-  fetch(`${API_BASE_URL}/zone/start`,  {
+export const startZone = async (zoneId: string, duration: number): Promise<void> => {
+  const response = await fetch(`${API_BASE_URL}/zone/start`, {
     method: 'PUT',
     mode: 'cors',
     cache: 'no-cache',
@@ -83,18 +80,67 @@ const zoneStart = (zoneId: string, duration: number): void => {
     headers: {
       Authorization: `Bearer ${API_KEY}`,
     },
-    body: JSON.stringify({
-      id: zoneId,
-      duration: duration
-    }),
-  }).catch((error) => {
-    throw new Error(`Error starting watering: ${error}`);
+    body: JSON.stringify({ id: zoneId, duration }),
+  });
+
+  if (!response.ok) {
+    throw new Error(`Error starting watering: ${response.status}`);
+  }
+};
+
+/**
+ * React Query hooks for API calls.
+ */
+export const usePersonEntity = () => {
+  return useQuery<Entity, Error>({
+    queryKey: ['personEntity'],
+    queryFn: fetchPersonEntity,
+    retry: 2,
+    staleTime: 1000 * 60 * 5, // Consider data stale after 5 minutes
   });
 };
 
-export {
-  getPersonEntity,
-  getDeviceInfo,
-  deviceStopWater,
-  zoneStart
-}
+export const useDeviceInfo = (entityId: string) => {
+  return useQuery<DeviceInfo, Error>({
+    queryKey: ['deviceInfo', entityId],
+    queryFn: () => fetchDeviceInfo(entityId),
+    enabled: Boolean(entityId), // More explicit than !!entityId
+    retry: 2, // Retry failed requests twice
+    staleTime: 1000 * 60 * 5, // Consider data stale after 5 minutes
+  });
+};
+
+export const useStopWatering = () => {
+  const queryClient = useQueryClient();
+  return useMutation<void, Error, string>({
+    mutationFn: async (deviceId) => {
+      await stopWatering(deviceId);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ['deviceInfo'],
+      });
+    },
+    onError: (error: Error) => {
+      console.error('Failed to stop watering:', error.message);
+      throw error;
+    },
+    retry: 1, // Only retry once for mutations
+  });
+};
+
+export const useStartZone = () => {
+  const queryClient = useQueryClient();
+  return useMutation<void, Error, { zoneId: string; duration: number }>({
+    mutationFn: async ({ zoneId, duration }) => {
+      await startZone(zoneId, duration);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['deviceInfo'] });
+    },
+    onError: (error: Error) => {
+      console.error('Failed to start zone:', error.message);
+      throw error;
+    },
+  });
+};

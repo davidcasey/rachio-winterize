@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 
 import { WakeLockProvider } from 'app/providers/WakeLockProvider';
+import ReactQueryProvider from 'app/providers/ReactQueryProvider';
 
 import { Geist, Geist_Mono } from 'next/font/google';
 import 'app/globals.css';
@@ -25,7 +26,9 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
     <html lang="en" suppressHydrationWarning>
       <body className={`${geistSans.variable} ${geistMono.variable}`}>
         <WakeLockProvider />
-        {children}
+        <ReactQueryProvider>
+          {children}
+        </ReactQueryProvider>
       </body>
     </html>
   );

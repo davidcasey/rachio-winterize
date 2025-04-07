@@ -18,7 +18,7 @@ export type WinterizeActionUIProps = {
 }
 
 export const WinterizeActionRow = ({ action }: WinterizeActionUIProps): JSX.Element => {
-  const { winterizeSequence, setWinterizeSequence } = useContext(WinterizeContext);
+  const {winterizeSequence, setWinterizeSequence} = useContext(WinterizeContext);
   const [selected, setSelected] = useState(action.selected);
   const [blowOutTime, setBlowOutTime] = useState(action.blowOutTime);
   const [recoveryTime, setRecoveryTime] = useState(action.recoveryTime);
@@ -43,11 +43,11 @@ export const WinterizeActionRow = ({ action }: WinterizeActionUIProps): JSX.Elem
     });
   }
 
-  const handleBlowOutTimeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  function handleBlowOutTimeChange(e: React.ChangeEvent<HTMLInputElement>) {
     setBlowOutTime(Number(e.target.value));
   };
 
-  const handleRecoveryTimeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  function handleRecoveryTimeChange(e: React.ChangeEvent<HTMLInputElement>) {
     setRecoveryTime(Number(e.target.value));
   };
 
@@ -60,7 +60,7 @@ export const WinterizeActionRow = ({ action }: WinterizeActionUIProps): JSX.Elem
         <input type='checkbox' checked={selected} onChange={() => setSelected(!selected)} />
       </td>
       <td>
-        { action.name }
+        {action.name}
       </td>
       <td>
         <input type="number" value={blowOutTime} onChange={handleBlowOutTimeChange} />
