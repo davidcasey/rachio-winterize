@@ -1,15 +1,11 @@
 export type Entity = {
   token: string;
   id: string;
-  fullName: string;
 };
 
-export type Zone = {
-  name: string;
-  id: string;
-  imageUrl: string;
-  enabled: boolean;
-  zoneNumber: number;
+export type EntityInfo = {
+  fullName: string;
+  devices: Device[];
 };
 
 export type Device = {
@@ -20,7 +16,10 @@ export type Device = {
   zones: Zone[];
 };
 
-export type DeviceInfo = {
-  fullName: string;
-  devices: Device[];
+export type Zone = {
+  name: string;
+  id: string;
+  imageUrl: string;
+  enabled: boolean;
+  zoneNumber: number;
 };

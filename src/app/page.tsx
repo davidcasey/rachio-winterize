@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 
-import { fetchDeviceInfo, fetchPersonEntity } from 'app/services/rachio-services';
+import { fetchEntity, fetchEntityId } from 'app/services/rachio-services';
 import { Device } from 'app/models/rachioModels';
 import { WinterizeSettings, WinterizeSequence } from 'app/models/winterizeModels';
 import { WinterizeSettingsContext, winterizeSettingsDefault } from 'app/context/WinterizeSettingsContext';
@@ -15,8 +15,8 @@ export default function Home() {
   const [winterizeSequence, setWinterizeSequence] = useState<WinterizeSequence | undefined>(undefined);
 
   function initializeData() {
-    fetchPersonEntity().then(entity => {
-      fetchDeviceInfo(entity.id).then(info => {
+    fetchEntityId().then(entity => {
+      fetchEntity(entity.id).then(info => {
         let deviceActiveZones = info.devices.map(device => {
           return {
             name: device.name,

@@ -1,5 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { Entity, DeviceInfo } from 'app/models/rachioModels';
+import { Entity, EntityInfo } from 'app/models/rachioModels';
 
 const API_KEY = process.env.NEXT_PUBLIC_API_KEY;
 const API_BASE_URL = process.env.NEXT_PUBLIC_RACHIO_API_BASE_URL;
@@ -9,9 +9,9 @@ if (!API_KEY || !API_BASE_URL) {
 }
 
 /**
- * Fetch the person entity currently logged in through OAuth.
+ * Fetch the entity id using the private API key
  */
-export const fetchPersonEntity = async (): Promise<Entity> => {
+export const fetchEntityId = async (): Promise<Entity> => {
   const response = await fetch(`${API_BASE_URL}/person/info`, {
     method: 'GET',
     cache: 'no-cache',
@@ -22,16 +22,16 @@ export const fetchPersonEntity = async (): Promise<Entity> => {
   });
 
   if (!response.ok) {
-    throw new Error(`Error getting person entity: ${response.status}`);
+    throw new Error(`Error getting entity ID: ${response.status}`);
   }
 
   return response.json();
 };
 
 /**
- * Fetch the device information for a person entity.
+ * Fetch entity using the ID. Response contains the device and zone information.
  */
-export const fetchDeviceInfo = async (entityId: string): Promise<DeviceInfo> => {
+export const fetchEntity = async (entityId: string): Promise<EntityInfo> => {
   const response = await fetch(`${API_BASE_URL}/person/${entityId}`, {
     method: 'GET',
     cache: 'no-cache',
@@ -42,7 +42,7 @@ export const fetchDeviceInfo = async (entityId: string): Promise<DeviceInfo> => 
   });
 
   if (!response.ok) {
-    throw new Error(`Error getting device info: ${response.status}`);
+    throw new Error(`Error getting entity info: ${response.status}`);
   }
 
   return response.json();
@@ -51,7 +51,7 @@ export const fetchDeviceInfo = async (entityId: string): Promise<DeviceInfo> => 
 /**
  * Stop all watering on a device.
  */
-export const stopWatering = async (deviceId: string): Promise<void> => {
+export const stopAllWatering = async (deviceId: string): Promise<void> => {
   const response = await fetch(`${API_BASE_URL}/device/stop_water`, {
     method: 'PUT',
     mode: 'cors',
@@ -71,7 +71,7 @@ export const stopWatering = async (deviceId: string): Promise<void> => {
 /**
  * Start a zone for a specific duration.
  */
-export const startZone = async (zoneId: string, duration: number): Promise<void> => {
+export const startZoneWatering = async (zoneId: string, duration: number): Promise<void> => {
   const response = await fetch(`${API_BASE_URL}/zone/start`, {
     method: 'PUT',
     mode: 'cors',
@@ -91,19 +91,19 @@ export const startZone = async (zoneId: string, duration: number): Promise<void>
 /**
  * React Query hooks for API calls.
  */
-export const usePersonEntity = () => {
+export const useEntityId = () => {
   return useQuery<Entity, Error>({
-    queryKey: ['personEntity'],
-    queryFn: fetchPersonEntity,
+    queryKey: ['entity'],
+    queryFn: fetchEntityId,
     retry: 2,
     staleTime: 1000 * 60 * 5, // Consider data stale after 5 minutes
   });
 };
 
-export const useDeviceInfo = (entityId: string) => {
-  return useQuery<DeviceInfo, Error>({
-    queryKey: ['deviceInfo', entityId],
-    queryFn: () => fetchDeviceInfo(entityId),
+export const useEntity = (entityId: string) => {
+  return useQuery<EntityInfo, Error>({
+    queryKey: ['entityInfo', entityId],
+    queryFn: () => fetchEntity(entityId),
     enabled: Boolean(entityId), // More explicit than !!entityId
     retry: 2, // Retry failed requests twice
     staleTime: 1000 * 60 * 5, // Consider data stale after 5 minutes
@@ -114,7 +114,7 @@ export const useStopWatering = () => {
   const queryClient = useQueryClient();
   return useMutation<void, Error, string>({
     mutationFn: async (deviceId) => {
-      await stopWatering(deviceId);
+      await stopAllWatering(deviceId);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({
@@ -129,11 +129,11 @@ export const useStopWatering = () => {
   });
 };
 
-export const useStartZone = () => {
+export const useStartZoneWatering = () => {
   const queryClient = useQueryClient();
   return useMutation<void, Error, { zoneId: string; duration: number }>({
     mutationFn: async ({ zoneId, duration }) => {
-      await startZone(zoneId, duration);
+      await startZoneWatering(zoneId, duration);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['deviceInfo'] });
