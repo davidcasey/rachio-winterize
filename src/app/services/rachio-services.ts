@@ -1,17 +1,17 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Entity, EntityInfo } from 'app/models/rachioModels';
+import { getEntityToken, getEntityId } from 'app/store/entityStore';
 
-const API_KEY = process.env.NEXT_PUBLIC_API_KEY;
 const API_BASE_URL = process.env.NEXT_PUBLIC_RACHIO_API_BASE_URL;
-
-if (!API_KEY || !API_BASE_URL) {
-  throw new Error('API_KEY or API_BASE_URL is not defined in environment variables.');
+if (!API_BASE_URL) {
+  throw new Error('API_BASE_URL is not defined in environment variables.');
 }
 
 /**
  * Fetch the entity id using the private API key
  */
 export const fetchEntityId = async (): Promise<Entity> => {
+  const API_KEY = getEntityToken();
   const response = await fetch(`${API_BASE_URL}/person/info`, {
     method: 'GET',
     cache: 'no-cache',
@@ -31,7 +31,8 @@ export const fetchEntityId = async (): Promise<Entity> => {
 /**
  * Fetch entity using the ID. Response contains the device and zone information.
  */
-export const fetchEntity = async (entityId: string): Promise<EntityInfo> => {
+const fetchEntity = async (entityId: string): Promise<EntityInfo> => {
+  const API_KEY = getEntityToken();
   const response = await fetch(`${API_BASE_URL}/person/${entityId}`, {
     method: 'GET',
     cache: 'no-cache',
@@ -51,7 +52,8 @@ export const fetchEntity = async (entityId: string): Promise<EntityInfo> => {
 /**
  * Stop all watering on a device.
  */
-export const stopAllWatering = async (deviceId: string): Promise<void> => {
+const stopAllWatering = async (deviceId: string): Promise<void> => {
+  const API_KEY = getEntityToken();
   const response = await fetch(`${API_BASE_URL}/device/stop_water`, {
     method: 'PUT',
     mode: 'cors',
@@ -71,7 +73,8 @@ export const stopAllWatering = async (deviceId: string): Promise<void> => {
 /**
  * Start a zone for a specific duration.
  */
-export const startZoneWatering = async (zoneId: string, duration: number): Promise<void> => {
+const startZoneWatering = async (zoneId: string, duration: number): Promise<void> => {
+  const API_KEY = getEntityToken();
   const response = await fetch(`${API_BASE_URL}/zone/start`, {
     method: 'PUT',
     mode: 'cors',
@@ -91,6 +94,7 @@ export const startZoneWatering = async (zoneId: string, duration: number): Promi
 /**
  * React Query hooks for API calls.
  */
+/*
 export const useEntityId = () => {
   return useQuery<Entity, Error>({
     queryKey: ['entity'],
@@ -99,8 +103,12 @@ export const useEntityId = () => {
     staleTime: 1000 * 60 * 5, // Consider data stale after 5 minutes
   });
 };
+*/
 
-export const useEntity = (entityId: string) => {
+export const useEntity = () => {
+  const entityId = getEntityId();
+  if (!entityId) 
+    return undefined;
   return useQuery<EntityInfo, Error>({
     queryKey: ['entityInfo', entityId],
     queryFn: () => fetchEntity(entityId),

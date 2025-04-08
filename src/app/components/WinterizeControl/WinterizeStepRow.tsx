@@ -14,28 +14,28 @@ import { WinterizeContext } from 'app/context/WinterizeContext';
  */
 
 export type WinterizeStepRowProps = {
-  Step: WinterizeStep;
+  step: WinterizeStep;
 }
 
-export const WinterizeStepRow = ({ Step }: WinterizeStepRowProps): JSX.Element => {
+export const WinterizeStepRow = ({ step }: WinterizeStepRowProps): JSX.Element => {
   const {winterizeSequence, setWinterizeSequence} = useContext(WinterizeContext);
-  const [selected, setSelected] = useState(Step.selected);
-  const [blowOutTime, setBlowOutTime] = useState(Step.blowOutTime);
-  const [recoveryTime, setRecoveryTime] = useState(Step.recoveryTime);
+  const [selected, setSelected] = useState(step.selected);
+  const [blowOutTime, setBlowOutTime] = useState(step.blowOutTime);
+  const [recoveryTime, setRecoveryTime] = useState(step.recoveryTime);
 
   useEffect(() => {
     handleStepChange({
-      ...Step,
+      ...step,
       selected,
       blowOutTime,
       recoveryTime,
     });
   }, [selected, blowOutTime, recoveryTime]);
 
-  function handleStepChange(Step: WinterizeStep) {
+  function handleStepChange(step: WinterizeStep) {
     if (!winterizeSequence) return;
-    const updatedSteps = winterizeSequence.steps.map((a) => {
-      return a.id === Step.id ? Step : a;
+    const updatedSteps = winterizeSequence.steps.map((s) => {
+      return s.id === step.id ? step : s;
     });
     setWinterizeSequence({
       ...winterizeSequence,
@@ -60,7 +60,7 @@ export const WinterizeStepRow = ({ Step }: WinterizeStepRowProps): JSX.Element =
         <input type='checkbox' checked={selected} onChange={() => setSelected(!selected)} />
       </td>
       <td>
-        {Step.name}
+        {step.name}
       </td>
       <td>
         <input type="number" value={blowOutTime} onChange={handleBlowOutTimeChange} />

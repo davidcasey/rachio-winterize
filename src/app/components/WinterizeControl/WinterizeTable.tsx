@@ -7,6 +7,7 @@ import { WinterizeStepRow } from 'app/components/WinterizeControl/WinterizeStepR
 import { DeviceSelector } from 'app/components/WinterizeControl/DeviceSelector';
 import { BlowOutTime } from 'app/components/WinterizeControl/BlowOutTime';
 import { RecoveryTime } from 'app/components/WinterizeControl/RecoveryTime';
+import { useWinterizeActions } from 'app/store/winterizeStore';
 
 export type WinterizeTableProps = {
   devices: Device[];
@@ -14,6 +15,7 @@ export type WinterizeTableProps = {
 
 export const WinterizeTable = ({ devices }: WinterizeTableProps): JSX.Element => {
   const { winterizeSequence } = useContext(WinterizeContext);
+  // const winterizeSequence = useWinterizeActions();
 
   function renderWinterizeSequence() {
     return winterizeSequence && (
@@ -33,8 +35,8 @@ export const WinterizeTable = ({ devices }: WinterizeTableProps): JSX.Element =>
           </thead>
           <tbody>
             {
-              winterizeSequence.steps.map((Step: WinterizeStep) => (
-                <WinterizeStepRow Step={Step} key={`${Step.id}`}
+              winterizeSequence.steps.map((step: WinterizeStep) => (
+                <WinterizeStepRow step={step} key={`${step.id}`}
                 />
               ))
             }
