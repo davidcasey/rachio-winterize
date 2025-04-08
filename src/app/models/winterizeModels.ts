@@ -4,10 +4,10 @@ export type WinterizeSettings = {
   blowOutTime: number;
   recoveryTime: number;
   selectedDevice: Device | null;
-  activeAction: WinterizeAction | null;
+  activeStep: WinterizeStep | null;
 }
 
-export type WinterizeAction = {
+export type WinterizeStep = {
   id: string;
   name: string;
   active: boolean;
@@ -20,5 +20,5 @@ export type WinterizeAction = {
 export type WinterizeSequence = {
   id: string;
   name: string;
-  actions: WinterizeAction[];
+  steps: WinterizeStep[];
 }

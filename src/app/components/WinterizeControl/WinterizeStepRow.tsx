@@ -1,10 +1,10 @@
 import { JSX, useEffect, useState, useContext } from 'react';
 
-import { WinterizeAction } from 'app/models/winterizeModels';
+import { WinterizeStep } from 'app/models/winterizeModels';
 import { WinterizeContext } from 'app/context/WinterizeContext';
 
 /**
- * WinterizeActionRow component
+ * WinterizeStepRow component
  * This component allows the user to select how much time will be spent on the following:
  * - selected: if it is selected for the winterize sequence
  * - blowOutTime: how long to blow out the sprinkler zone with air
@@ -13,33 +13,33 @@ import { WinterizeContext } from 'app/context/WinterizeContext';
  * @returns JSX.Element
  */
 
-export type WinterizeActionUIProps = {
-  action: WinterizeAction;
+export type WinterizeStepRowProps = {
+  Step: WinterizeStep;
 }
 
-export const WinterizeActionRow = ({ action }: WinterizeActionUIProps): JSX.Element => {
+export const WinterizeStepRow = ({ Step }: WinterizeStepRowProps): JSX.Element => {
   const {winterizeSequence, setWinterizeSequence} = useContext(WinterizeContext);
-  const [selected, setSelected] = useState(action.selected);
-  const [blowOutTime, setBlowOutTime] = useState(action.blowOutTime);
-  const [recoveryTime, setRecoveryTime] = useState(action.recoveryTime);
+  const [selected, setSelected] = useState(Step.selected);
+  const [blowOutTime, setBlowOutTime] = useState(Step.blowOutTime);
+  const [recoveryTime, setRecoveryTime] = useState(Step.recoveryTime);
 
   useEffect(() => {
-    handleActionChange({
-      ...action,
+    handleStepChange({
+      ...Step,
       selected,
       blowOutTime,
       recoveryTime,
     });
   }, [selected, blowOutTime, recoveryTime]);
 
-  function handleActionChange(action: WinterizeAction) {
+  function handleStepChange(Step: WinterizeStep) {
     if (!winterizeSequence) return;
-    const updatedActions = winterizeSequence.actions.map((a) => {
-      return a.id === action.id ? action : a;
+    const updatedSteps = winterizeSequence.steps.map((a) => {
+      return a.id === Step.id ? Step : a;
     });
     setWinterizeSequence({
       ...winterizeSequence,
-      actions: updatedActions,
+      steps: updatedSteps,
     });
   }
 
@@ -60,7 +60,7 @@ export const WinterizeActionRow = ({ action }: WinterizeActionUIProps): JSX.Elem
         <input type='checkbox' checked={selected} onChange={() => setSelected(!selected)} />
       </td>
       <td>
-        {action.name}
+        {Step.name}
       </td>
       <td>
         <input type="number" value={blowOutTime} onChange={handleBlowOutTimeChange} />

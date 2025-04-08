@@ -11,7 +11,7 @@ export const winterizeSettingsDefault: WinterizeSettings = {
   blowOutTime: 35,
   recoveryTime: 300,
   selectedDevice: null,
-  activeAction: null,
+  activeStep: null,
 };
 
 export const WinterizeSettingsContext = createContext<WinterizeSettingsContextType>({

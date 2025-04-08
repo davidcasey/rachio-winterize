@@ -1,18 +1,18 @@
 import { JSX, useContext } from 'react';
 
 import { Device } from 'app/models/rachioModels';
-import { WinterizeAction } from 'app/models/winterizeModels';
+import { WinterizeStep } from 'app/models/winterizeModels';
 import { WinterizeContext } from 'app/context/WinterizeContext';
-import { WinterizeActionRow } from 'app/components/WinterizeControl/WinterizeActionRow';
+import { WinterizeStepRow } from 'app/components/WinterizeControl/WinterizeStepRow';
 import { DeviceSelector } from 'app/components/WinterizeControl/DeviceSelector';
 import { BlowOutTime } from 'app/components/WinterizeControl/BlowOutTime';
 import { RecoveryTime } from 'app/components/WinterizeControl/RecoveryTime';
 
-export type WinterizeSequenceUIProps = {
+export type WinterizeTableProps = {
   devices: Device[];
 }
 
-export const WinterizeTable = ({ devices }: WinterizeSequenceUIProps): JSX.Element => {
+export const WinterizeTable = ({ devices }: WinterizeTableProps): JSX.Element => {
   const { winterizeSequence } = useContext(WinterizeContext);
 
   function renderWinterizeSequence() {
@@ -33,8 +33,8 @@ export const WinterizeTable = ({ devices }: WinterizeSequenceUIProps): JSX.Eleme
           </thead>
           <tbody>
             {
-              winterizeSequence.actions.map((action: WinterizeAction) => (
-                <WinterizeActionRow action={action} key={`${action.id}`}
+              winterizeSequence.steps.map((Step: WinterizeStep) => (
+                <WinterizeStepRow Step={Step} key={`${Step.id}`}
                 />
               ))
             }

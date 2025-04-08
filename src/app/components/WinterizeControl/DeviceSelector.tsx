@@ -21,7 +21,7 @@ export const DeviceSelector = ({ devices }: DeviceSelectorProps): JSX.Element =>
     // console.log('Selected Device:', selectedDevice);
     // console.log('Cycles:', cycles);
     if (!selectedDevice) return;
-    const winterizeActions = Array(cycles).fill(null).map((_, cycleIndex) => (
+    const winterizeSteps = Array(cycles).fill(null).map((_, cycleIndex) => (
       selectedDevice.zones.map((zone: Zone, zoneIndex) => {
         return {
           id: `${cycleIndex}-${zoneIndex}`,
@@ -37,7 +37,7 @@ export const DeviceSelector = ({ devices }: DeviceSelectorProps): JSX.Element =>
     const winterizeSequence = {
       id: selectedDevice.id,
       name: selectedDevice.name,
-      actions: winterizeActions,
+      steps: winterizeSteps,
     }
     setWinterizeSequence(winterizeSequence);
     console.log('Winterize Sequence:', winterizeSequence);

@@ -1,10 +1,10 @@
-import { createContext, Dispatch, SetStateAction } from 'react';
+import { createContext, Dispatch, SetStateStep } from 'react';
 
 import { WinterizeSequence } from 'app/models/winterizeModels';
 
 export type WinterizeContextType = {
   winterizeSequence: WinterizeSequence | undefined;
-  setWinterizeSequence: Dispatch<SetStateAction<WinterizeSequence | undefined>>;
+  setWinterizeSequence: Dispatch<SetStateStep<WinterizeSequence | undefined>>;
 }
 
 export const WinterizeContext = createContext<WinterizeContextType>({
