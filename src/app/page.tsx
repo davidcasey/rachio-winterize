@@ -1,7 +1,11 @@
 'use client';
+import { useIsAuth } from 'app/hooks/useAuth';
+import { TokenInputForm } from 'app/components/WinterizeControl/TokenInputForm';
 import { WinterizeControl } from 'app/components/WinterizeControl/WinterizeControl';
 
 export default function Home() {
+  const isAuthenticated = useIsAuth();
+
   return (
     <>
       <h1>Rachio Winterize</h1>
@@ -16,7 +20,11 @@ export default function Home() {
         <li>Default time for air compressor recovery: 300 seconds</li>
       </ul>
       <br /><br />
-      <WinterizeControl />
+        {
+          isAuthenticated ? 
+            <WinterizeControl /> :
+            <TokenInputForm />
+        }
     </>
   );
 }
