@@ -1,5 +1,6 @@
 import { JSX, useState } from 'react';
-import { useSetEntityToken, getEntityId } from 'app/store/entityStore';
+import { useSetEntityToken } from 'app/store/entityStore';
+import { getIsAuth } from 'app/hooks/useAuth';
 
 const API_KEY = process.env.NEXT_PUBLIC_API_KEY;
 
@@ -11,8 +12,7 @@ export const TokenInputForm = (): JSX.Element => {
   const handleSubmit = async (e: React.SyntheticEvent<HTMLFormElement>) => {
     e.preventDefault();
     await setEntityToken(token);
-    // if the token is valid, the entity ID will be set, else it will be undefined
-    setError(getEntityId() ? null : 'Invalid API token. Please try again.');
+    setError(getIsAuth() ? null : 'Invalid API token. Please try again.');
   };
 
   return (
