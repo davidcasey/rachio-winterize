@@ -4,7 +4,6 @@ import { Device } from 'app/models/rachioModels';
 import { WinterizeStep } from 'app/models/winterizeModels';
 import { WinterizeContext } from 'app/context/WinterizeContext';
 import { WinterizeStepRow } from 'app/components/WinterizeControl/WinterizeStepRow';
-import { DeviceSelector } from 'app/components/WinterizeControl/DeviceSelector';
 import { BlowOutTime } from 'app/components/WinterizeControl/BlowOutTime';
 import { RecoveryTime } from 'app/components/WinterizeControl/RecoveryTime';
 import { useWinterizeActions } from 'app/store/winterizeStore';
@@ -61,7 +60,6 @@ export const WinterizeTable = ({ devices }: WinterizeTableProps): JSX.Element =>
 
   return (
     <>
-      <DeviceSelector devices={devices} />
       {renderWinterizeSequence()}
       <button type="button" onClick={() => {console.log(winterizeSequence)}}>Winterize Sequence</button>
     </>

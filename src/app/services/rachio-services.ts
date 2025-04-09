@@ -1,6 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { Entity, EntityInfo } from 'app/models/rachioModels';
-import { getEntityToken, getEntityId } from 'app/store/entityStore';
+import { Entity } from 'app/models/rachioModels';
+import { getAuthToken, getAuthId } from 'app/store/authStore';
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_RACHIO_API_BASE_URL;
 if (!API_BASE_URL) {
@@ -10,8 +10,8 @@ if (!API_BASE_URL) {
 /**
  * Fetch the entity id using the private API key
  */
-export const fetchEntityId = async (): Promise<Entity> => {
-  const API_KEY = getEntityToken();
+export const fetchEntityId = async (): Promise<{ id: string }> => {
+  const API_KEY = getAuthToken();
   const response = await fetch(`${API_BASE_URL}/person/info`, {
     method: 'GET',
     cache: 'no-cache',
@@ -31,8 +31,8 @@ export const fetchEntityId = async (): Promise<Entity> => {
 /**
  * Fetch entity using the ID. Response contains the device and zone information.
  */
-const fetchEntity = async (entityId: string): Promise<EntityInfo> => {
-  const API_KEY = getEntityToken();
+const fetchEntity = async (entityId: string): Promise<Entity> => {
+  const API_KEY = getAuthToken();
   const response = await fetch(`${API_BASE_URL}/person/${entityId}`, {
     method: 'GET',
     cache: 'no-cache',
@@ -53,7 +53,7 @@ const fetchEntity = async (entityId: string): Promise<EntityInfo> => {
  * Stop all watering on a device.
  */
 const stopAllWatering = async (deviceId: string): Promise<void> => {
-  const API_KEY = getEntityToken();
+  const API_KEY = getAuthToken();
   const response = await fetch(`${API_BASE_URL}/device/stop_water`, {
     method: 'PUT',
     mode: 'cors',
@@ -74,7 +74,7 @@ const stopAllWatering = async (deviceId: string): Promise<void> => {
  * Start a zone for a specific duration.
  */
 const startZoneWatering = async (zoneId: string, duration: number): Promise<void> => {
-  const API_KEY = getEntityToken();
+  const API_KEY = getAuthToken();
   const response = await fetch(`${API_BASE_URL}/zone/start`, {
     method: 'PUT',
     mode: 'cors',
@@ -106,10 +106,10 @@ export const useEntityId = () => {
 */
 
 export const useEntity = () => {
-  const entityId = getEntityId();
+  const entityId = getAuthId();
   if (!entityId) 
     return undefined;
-  return useQuery<EntityInfo, Error>({
+  return useQuery<Entity, Error>({
     queryKey: ['entityInfo', entityId],
     queryFn: () => fetchEntity(entityId),
     enabled: Boolean(entityId), // More explicit than !!entityId

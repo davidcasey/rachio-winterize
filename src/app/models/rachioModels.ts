@@ -1,9 +1,4 @@
 export type Entity = {
-  token: string;
-  id: string;
-};
-
-export type EntityInfo = {
   fullName: string;
   devices: Device[];
 };

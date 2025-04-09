@@ -1,9 +1,9 @@
-import { useEntityId, getEntityId, useClearEntity } from 'app/store/entityStore';
+import { useAuthId, getAuthId, useClearAuth as clearAuth } from 'app/store/authStore';
 
 // for UI React components
-export const useIsAuth = () => !!useEntityId();
+export const useIsAuth = () => !!useAuthId();
 
 // for non React components, service calls, etc.
-export const getIsAuth = () => !!getEntityId();
+export const getIsAuth = () => !!getAuthId();
 
-export const useClearAuth = () => useClearEntity();
+export const useClearAuth = () => clearAuth();
