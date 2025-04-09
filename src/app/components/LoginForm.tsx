@@ -4,7 +4,7 @@ import { getIsAuth } from 'app/hooks/useAuth';
 
 const API_KEY = process.env.NEXT_PUBLIC_API_KEY;
 
-export const TokenInputForm = (): JSX.Element => {
+export const LoginForm = (): JSX.Element => {
   const setEntityToken = useSetEntityToken();
   const [token, setToken] = useState<string>(API_KEY || '');
   const [error, setError] = useState<string | null>(null);

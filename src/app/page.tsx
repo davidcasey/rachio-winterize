@@ -1,6 +1,6 @@
 'use client';
 import { useIsAuth } from 'app/hooks/useAuth';
-import { TokenInputForm } from 'app/components/WinterizeControl/TokenInputForm';
+import { LoginForm } from 'app/components/LoginForm';
 import { WinterizeControl } from 'app/components/WinterizeControl/WinterizeControl';
 
 export default function Home() {
@@ -23,7 +23,7 @@ export default function Home() {
         {
           isAuthenticated ? 
             <WinterizeControl /> :
-            <TokenInputForm />
+            <LoginForm />
         }
     </>
   );
