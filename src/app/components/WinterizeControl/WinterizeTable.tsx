@@ -9,10 +9,10 @@ import { RecoveryTime } from 'app/components/WinterizeControl/RecoveryTime';
 import { useWinterizeActions } from 'app/store/winterizeStore';
 
 export type WinterizeTableProps = {
-  devices: Device[];
+  device: Device;
 }
 
-export const WinterizeTable = ({ devices }: WinterizeTableProps): JSX.Element => {
+export const WinterizeTable = ({ device }: WinterizeTableProps): JSX.Element => {
   const { winterizeSequence } = useContext(WinterizeContext);
   // const winterizeSequence = useWinterizeActions();
 

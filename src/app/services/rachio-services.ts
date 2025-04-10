@@ -94,27 +94,19 @@ const startZoneWatering = async (zoneId: string, duration: number): Promise<void
 /**
  * React Query hooks for API calls.
  */
-/*
-export const useEntityId = () => {
-  return useQuery<Entity, Error>({
-    queryKey: ['entity'],
-    queryFn: fetchEntityId,
-    retry: 2,
-    staleTime: 1000 * 60 * 5, // Consider data stale after 5 minutes
-  });
-};
-*/
-
-export const useEntity = () => {
+export const useEntity = ({ enabled = true } = {}) => {
   const entityId = getAuthId();
-  if (!entityId) 
-    return undefined;
+  const shouldEnable = Boolean(entityId) && enabled;
+
+  if (!entityId) {
+    return { data: null, isLoading: false, error: null };
+  }
+
   return useQuery<Entity, Error>({
-    queryKey: ['entityInfo', entityId],
+    queryKey: ['entity', entityId],
     queryFn: () => fetchEntity(entityId),
-    enabled: Boolean(entityId), // More explicit than !!entityId
-    retry: 2, // Retry failed requests twice
-    staleTime: 1000 * 60 * 5, // Consider data stale after 5 minutes
+    enabled: shouldEnable,
+    retry: 2,
   });
 };
 
