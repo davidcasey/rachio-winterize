@@ -2,61 +2,65 @@ import { useEffect } from 'react';
 import { create } from 'zustand';
 import { devtools } from 'zustand/middleware';
 
-import { Device } from 'app/models/rachioModels';
+import { Device, Zone } from 'app/models/rachioModels';
 import { useEntity } from 'app/services/rachio-services';
 import { getIsAuth } from 'app/hooks/useAuth';
+import { WinterizeStep } from 'app/models/winterizeModels';
 
 const initialWinterizeState = {
-  devices: null,
-  selectedDevice: null,
-  winterizeSequence: null,
-  activeStep: null,
   loading: false,
   error: null,
   hydrated: false,
+  devices: null,
+  zones: null,
+  selectedDevice: null,
+  activeStep: null,
+  winterizeSequence: null,
 };
 
 interface WinterizeStoreActions {
-  init: (devices: Device[]) => void;
-  setDevices: (devices: Device[]) => void;
   setSelectedDevice: (selectedDevice: Device) => void;
 }
+
 interface WinterizeStoreState {
-  devices: Device[] | null;
-  selectedDevice: Device | null;
+  // Store
   loading: boolean;
   error: string | null;
-  hydrated: boolean;
+  hydrated: boolean; // set hydrated to false to rehydrate store
+  init: (devices: Device[]) => void;
+  // Rachio
+  devices: Device[] | null;
+  zones: Zone[] | null;
+  // Winterize
+  selectedDevice: Device | null;
+  activeStep: WinterizeStep | null;
   actions: WinterizeStoreActions;
 };
 
 const useWinterizeStore = create<WinterizeStoreState>()(
   devtools((set) => ({
     ...initialWinterizeState,
+    init: (devices) => set({
+      ...initialWinterizeState, // Reset everything, using the initial state
+      devices,
+    }),
     actions: {
-      init: (devices) => set({
-        ...initialWinterizeState, // Reset everything, using the central initial state
-        devices,
-      }),
-      setDevices: (devices: Device[]) => set((state) => ({
-        ...state,
-        devices,
-      })),
       setSelectedDevice: (selectedDevice: Device) => set((state) => ({
         ...state,
         selectedDevice,
+        zones: selectedDevice.zones,
       })),
     },
   }))
 );
 
 /**
- * initializeWinterizeStore is an internal function that initializes the winterize store with data 
+ * useInitializeWinterize is an internal function that initializes the winterize store with data 
  * from the useEntity response. We allow setState to overwrite the state, since this would be a 
  * change in Entity. A new entity would have different devices and zones rendering our existing 
  * store data useless.
  */
-export const useInitializeWinterize = () => {
+const useInitializeWinterize = () => {
   const isAuth = getIsAuth();
   if (!isAuth) return;
 
@@ -87,16 +91,9 @@ export const useInitializeWinterize = () => {
     }
 
     if (data?.devices) {
-      const { actions: { init } } = useWinterizeStore.getState();
-      const deviceActiveZones = data.devices.map((device) => ({
-        ...device,
-        zones: device.zones
-          .filter((zone) => zone.enabled)
-          .sort((a, b) => a.zoneNumber - b.zoneNumber),
-      }));
-
-      init(deviceActiveZones);
-      useWinterizeStore.setState({ loading: false, error: null });
+      const { init } = useWinterizeStore.getState();
+      init(data.devices);
+      useWinterizeStore.setState({ hydrated: true, loading: false, error: null });
     }
     if (data && !data.devices?.length) {
       useWinterizeStore.setState({ hydrated: true, loading: false, error: "No devices found." });
@@ -115,10 +112,16 @@ const useWinterize = <T>(selector: (state: WinterizeStoreState) => T): T => {
   return useWinterizeStore(selector);
 };
 
+export const useWinterizeLoading = () => useWinterize((state) => state.loading);
+export const useWinterizeError = () => useWinterize((state) => state.error);
+export const useWinterizeHydrated = () => useWinterize((state) => state.hydrated);
+
 export const useDevices = () => useWinterize((state) => state.devices);
+export const useSelectedDevice = () => useWinterize((state) => state.selectedDevice);
+export const useZones = () => useWinterize((state) => state.zones);
+
 export const useWinterizeActions = () => useWinterize((state) => state.actions);
 
-// export const useSelectedDevice = () => useWinterize((state) => state.selectedDevice);
 
       
       /*

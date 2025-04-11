@@ -16,7 +16,7 @@ export const RecoveryTime = (): JSX.Element => {
 
   return (
     <>
-      <label htmlFor="default-recovery-time">Recovery time</label>
+      {/* <label htmlFor="default-recovery-time">Recovery time</label> */}
       <input
         type="number"
         id="default-recovery-time"

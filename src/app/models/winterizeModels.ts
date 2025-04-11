@@ -3,8 +3,6 @@ import { Device, Zone } from 'app/models/rachioModels';
 export type WinterizeSettings = {
   blowOutTime: number;
   recoveryTime: number;
-  selectedDevice: Device | null;
-  activeStep: WinterizeStep | null;
 }
 
 export type WinterizeStep = {
@@ -20,5 +18,6 @@ export type WinterizeStep = {
 export type WinterizeSequence = {
   id: string;
   name: string;
+  selectedDevice: Device;
   steps: WinterizeStep[];
 }

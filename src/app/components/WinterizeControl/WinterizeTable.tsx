@@ -1,25 +1,20 @@
-import { JSX, useContext } from 'react';
+import { JSX } from 'react';
 
-import { Device } from 'app/models/rachioModels';
-import { WinterizeStep } from 'app/models/winterizeModels';
-import { WinterizeContext } from 'app/context/WinterizeContext';
-import { WinterizeStepRow } from 'app/components/WinterizeControl/WinterizeStepRow';
+// import { Device } from 'app/models/rachioModels';
+// import { WinterizeStep } from 'app/models/winterizeModels';
+import { useSelectedDevice } from 'app/store/winterizeStore';
+
+// import { WinterizeStepRow } from 'app/components/WinterizeControl/WinterizeStepRow';
 import { BlowOutTime } from 'app/components/WinterizeControl/BlowOutTime';
 import { RecoveryTime } from 'app/components/WinterizeControl/RecoveryTime';
-import { useWinterizeActions } from 'app/store/winterizeStore';
 
-export type WinterizeTableProps = {
-  device: Device;
-}
-
-export const WinterizeTable = ({ device }: WinterizeTableProps): JSX.Element => {
-  const { winterizeSequence } = useContext(WinterizeContext);
-  // const winterizeSequence = useWinterizeActions();
+export const WinterizeTable = (): JSX.Element => {
+  const selectedDevice = useSelectedDevice();
 
   function renderWinterizeSequence() {
-    return winterizeSequence && (
+    return selectedDevice && (
       <>
-        <h2>{winterizeSequence.name}</h2>
+        <h2>{selectedDevice.name}</h2>
         <table>
           <thead>
             <tr>
@@ -34,14 +29,14 @@ export const WinterizeTable = ({ device }: WinterizeTableProps): JSX.Element => 
           </thead>
           <tbody>
             {
-              winterizeSequence.steps.map((step: WinterizeStep) => (
-                <WinterizeStepRow step={step} key={`${step.id}`}
-                />
-              ))
+              // winterizeSequence.steps.map((step: WinterizeStep) => (
+              //   <WinterizeStepRow step={step} key={`${step.id}`}
+              //   />
+              // ))
             }
           </tbody>
           <tfoot>
-            <tr>
+            <tr aria-label="Add a new cycle">
               <td colSpan={3}>
                 <button type="button" onClick={() => {}}>Add cycle</button>
               </td>
@@ -61,7 +56,7 @@ export const WinterizeTable = ({ device }: WinterizeTableProps): JSX.Element => 
   return (
     <>
       {renderWinterizeSequence()}
-      <button type="button" onClick={() => {console.log(winterizeSequence)}}>Winterize Sequence</button>
+      {/* <button type="button" onClick={() => {console.log(winterizeSequence)}}>Winterize Sequence</button> */}
     </>
   );
 }

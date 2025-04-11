@@ -16,7 +16,7 @@ export const BlowOutTime = (): JSX.Element => {
 
   return (
     <>
-      <label htmlFor="default-blow-out-time">Blow out time</label>
+      {/* <label htmlFor="default-blow-out-time">Blow out time</label> */}
       <input
         type="number"
         id="default-blow-out-time"
