@@ -1,4 +1,5 @@
 export type Entity = {
+  id: string;
   fullName: string;
   devices: Device[];
 };

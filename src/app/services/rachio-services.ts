@@ -1,5 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { Entity } from 'app/models/rachioModels';
+import { Entity, Device, Zone } from 'app/models/rachioModels';
 import { getAuthToken, getAuthId } from 'app/store/authStore';
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_RACHIO_API_BASE_URL;
@@ -42,11 +42,36 @@ const fetchEntity = async (entityId: string): Promise<Entity> => {
     },
   });
 
-  if (!response.ok) {
-    throw new Error(`Error getting entity info: ${response.status}`);
-  }
+  const entity = await response.json();
 
-  return response.json();
+  const mapZone = (zone: any): Zone => ({
+    id: zone.id,
+    name: zone.name,
+    imageUrl: zone.imageUrl,
+    enabled: zone.enabled,
+    zoneNumber: zone.zoneNumber,
+  });
+
+  const mapDevice = (device: any): Device => ({
+    id: device.id,
+    name: device.name,
+    latitude: device.latitude,
+    longitude: device.longitude,
+    zones: Array.isArray(device.zones)
+      ? device.zones
+        .filter((zone: any) => zone.enabled)
+        .sort((a: any, b: any) => a.zoneNumber - b.zoneNumber)
+        .map(mapZone)
+      : [],
+  });
+
+  const result: Entity = {
+    id: entity.id,
+    fullName: entity.fullName,
+    devices: Array.isArray(entity.devices) ? entity.devices.map(mapDevice) : [],
+  };
+
+  return result;
 };
 
 /**
@@ -97,11 +122,9 @@ const startZoneWatering = async (zoneId: string, duration: number): Promise<void
 export const useEntity = ({ enabled = true } = {}) => {
   const entityId = getAuthId();
   const shouldEnable = Boolean(entityId) && enabled;
-
   if (!entityId) {
     return { data: null, isLoading: false, error: null };
   }
-
   return useQuery<Entity, Error>({
     queryKey: ['entity', entityId],
     queryFn: () => fetchEntity(entityId),
