@@ -6,7 +6,7 @@ export type WinterizeSettings = {
 }
 
 export type WinterizeStep = {
-  id: string;
+  // id: string;
   name: string;
   active: boolean;
   selected: boolean;
@@ -15,9 +15,9 @@ export type WinterizeStep = {
   zone: Zone;
 }
 
-export type WinterizeSequence = {
-  id: string;
-  name: string;
-  selectedDevice: Device;
-  steps: WinterizeStep[];
-}
+// export type WinterizeSequence = {
+//   id: string;
+//   name: string;
+//   selectedDevice: Device;
+//   steps: WinterizeStep[];
+// }

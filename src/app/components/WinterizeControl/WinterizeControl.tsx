@@ -7,6 +7,7 @@ import {
   useDevices, 
   useSelectedDevice, 
   useZones, 
+  useWinterizeSequence,
   useWinterizeActions 
 } from 'app/store/winterizeStore';
 
@@ -17,20 +18,28 @@ export const WinterizeControl = (): JSX.Element => {
   const [winterizeSettings, setWinterizeSettings] = useState<WinterizeSettings>(winterizeSettingsDefault);
   const devices = useDevices();
   const selectedDevice = useSelectedDevice();
-  const zones = useZones();
   const { setSelectedDevice } = useWinterizeActions();
+  const winterizeSequence = useWinterizeSequence();
 
+
+  // TEMPORARY DEBUGGING!
+  const zones = useZones();
   useEffect(() => {
     console.log('selected device: ', selectedDevice);
     console.log('zones: ', zones);
   }, [selectedDevice]);
+  useEffect(() => {
+    console.log('winterize sequence: ', winterizeSequence);
+  }, [winterizeSequence]);
+  // END DEBUG
+
 
   function setDevice(device: Device): void {
     setSelectedDevice(device);
   }
 
   return (
-    <WinterizeSettingsContext.Provider value={{ winterizeSettings, setWinterizeSettings }}>
+    <WinterizeSettingsContext.Provider value={{winterizeSettings, setWinterizeSettings}}>
       {/* {devices.length > 1 && ( */}
         { devices && <DeviceSelector devices={devices} onChange={setDevice} /> }
       {/* )} */}

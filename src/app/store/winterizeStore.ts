@@ -14,12 +14,12 @@ const initialWinterizeState = {
   devices: null,
   zones: null,
   selectedDevice: null,
-  activeStep: null,
-  winterizeSequence: null,
+  winterizeSequence: [],
 };
 
 interface WinterizeStoreActions {
   setSelectedDevice: (selectedDevice: Device) => void;
+  addWinterizeSteps: (steps: WinterizeStep[]) => void;
 }
 
 interface WinterizeStoreState {
@@ -33,7 +33,7 @@ interface WinterizeStoreState {
   zones: Zone[] | null;
   // Winterize
   selectedDevice: Device | null;
-  activeStep: WinterizeStep | null;
+  winterizeSequence: WinterizeStep[];
   actions: WinterizeStoreActions;
 };
 
@@ -49,6 +49,10 @@ const useWinterizeStore = create<WinterizeStoreState>()(
         ...state,
         selectedDevice,
         zones: selectedDevice.zones,
+      })),
+      addWinterizeSteps: (steps: WinterizeStep[]) => set((state) => ({
+        ...state,
+        winterizeSequence: [...state.winterizeSequence, ...steps],
       })),
     },
   }))
@@ -119,39 +123,13 @@ export const useWinterizeHydrated = () => useWinterize((state) => state.hydrated
 export const useDevices = () => useWinterize((state) => state.devices);
 export const useSelectedDevice = () => useWinterize((state) => state.selectedDevice);
 export const useZones = () => useWinterize((state) => state.zones);
+export const useWinterizeSequence = () => useWinterize((state) => state.winterizeSequence);
 
 export const useWinterizeActions = () => useWinterize((state) => state.actions);
 
-
-      
       /*
       setActiveStep: (activeStep: WinterizeStep) => set((state) => ({
         ...state,
         activeStep,
       })),
-      addWinterizeStep: (step: WinterizeStep) => set((state) => ({
-        winterizeSequence: {
-          ...state.winterizeSequence,
-          steps: [...(state.winterizeSequence?.steps || []), step],
-        },
-      })),
       */
-
-/*
-function initializeData(token: string) {
-  fetchEntityId().then(entity => {
-    fetchEntity(entity.id).then(info => {
-      let deviceActiveZones = info.devices.map(device => {
-        return {
-          name: device.name,
-          id: device.id,
-          latitude: device.latitude,
-          longitude: device.longitude,
-          zones: device.zones.filter(zone => zone.enabled).sort((a, b) => a.zoneNumber - b.zoneNumber),
-        }
-      });
-      setDevices(deviceActiveZones);
-    });
-  }
-)}
-*/

@@ -1,62 +1,63 @@
-import { JSX } from 'react';
+import { JSX, useContext } from 'react';
 
-// import { Device } from 'app/models/rachioModels';
-// import { WinterizeStep } from 'app/models/winterizeModels';
-import { useSelectedDevice } from 'app/store/winterizeStore';
+import { WinterizeStep } from 'app/models/winterizeModels';
+import { WinterizeSettingsContext } from 'app/context/WinterizeSettingsContext';
+import { useSelectedDevice, useZones, useWinterizeSequence } from 'app/store/winterizeStore';
+import { useAddWinterizeCycle } from 'app/hooks/useAddWinterizeCycle';
 
-// import { WinterizeStepRow } from 'app/components/WinterizeControl/WinterizeStepRow';
+import { WinterizeTableRow } from 'app/components/WinterizeControl/WinterizeTableRow';
 import { BlowOutTime } from 'app/components/WinterizeControl/BlowOutTime';
 import { RecoveryTime } from 'app/components/WinterizeControl/RecoveryTime';
 
 export const WinterizeTable = (): JSX.Element => {
+  const {winterizeSettings} = useContext(WinterizeSettingsContext);
   const selectedDevice = useSelectedDevice();
+  const zones = useZones();
+  const winterizeSequence = useWinterizeSequence();
+  const addWinterizeCycle = useAddWinterizeCycle();
 
-  function renderWinterizeSequence() {
-    return selectedDevice && (
-      <>
-        <h2>{selectedDevice.name}</h2>
-        <table>
-          <thead>
-            <tr>
-              <th>
-                {/* isActive */ }
-              </th>
-              <th>Enabled</th>
-              <th>Zone Name</th>
-              <th>Blow Out Time (seconds)</th>
-              <th>Recovery Time (seconds)</th>
-            </tr>
-          </thead>
-          <tbody>
-            {
-              // winterizeSequence.steps.map((step: WinterizeStep) => (
-              //   <WinterizeStepRow step={step} key={`${step.id}`}
-              //   />
-              // ))
-            }
-          </tbody>
-          <tfoot>
-            <tr aria-label="Add a new cycle">
-              <td colSpan={3}>
-                <button type="button" onClick={() => {}}>Add cycle</button>
-              </td>
-              <td>
-                <BlowOutTime />
-              </td>
-              <td>
-                <RecoveryTime />
-              </td>
-            </tr>
-          </tfoot>
-        </table>
-      </>
-    );
-  }
-
-  return (
+  return selectedDevice && zones && (
     <>
-      {renderWinterizeSequence()}
-      {/* <button type="button" onClick={() => {console.log(winterizeSequence)}}>Winterize Sequence</button> */}
+      <h2>{selectedDevice.name}</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>
+              {/* isActive */ }
+            </th>
+            <th>Enabled</th>
+            <th>Zone Name</th>
+            <th>Blow Out Time (seconds)</th>
+            <th>Recovery Time (seconds)</th>
+          </tr>
+        </thead>
+        <tbody>
+          {
+            winterizeSequence.map((step: WinterizeStep, index) => (
+              <WinterizeTableRow step={step} key={index} />
+            ))
+          }
+        </tbody>
+        <tfoot>
+          <tr aria-label="Add a new cycle">
+            <td colSpan={3}>
+              <button
+                type="button"
+                onClick={() => {
+                  addWinterizeCycle(zones, winterizeSettings.blowOutTime, winterizeSettings.recoveryTime)
+                }}>
+                  Add cycle
+                </button>
+            </td>
+            <td>
+              <BlowOutTime />
+            </td>
+            <td>
+              <RecoveryTime />
+            </td>
+          </tr>
+        </tfoot>
+      </table>
     </>
-  );
+  ) || <></>;
 }
