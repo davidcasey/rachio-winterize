@@ -1,7 +1,7 @@
-import { JSX, useEffect, useState, useContext } from 'react';
+import { JSX, useEffect, useState } from 'react';
 
 import { WinterizeStep } from 'app/models/winterizeModels';
-import { useWinterizeSequence } from 'app/store/winterizeStore';
+import { useWinterizeActions } from 'app/store/winterizeStore';
 
 /**
  * WinterizeTableRow component
@@ -18,39 +18,19 @@ export type WinterizeTableRowProps = {
 }
 
 export const WinterizeTableRow = ({ step }: WinterizeTableRowProps): JSX.Element => {
-  const winterizeSequence = useWinterizeSequence();
-  const [selected, setSelected] = useState(step.selected);
-  const [blowOutTime, setBlowOutTime] = useState(step.blowOutTime);
-  const [recoveryTime, setRecoveryTime] = useState(step.recoveryTime);
+  const { updateWinterizeStep } = useWinterizeActions();
 
-  useEffect(() => {
-    handleStepChange({
-      ...step,
-      selected,
-      blowOutTime,
-      recoveryTime,
-    });
-  }, [selected, blowOutTime, recoveryTime]);
 
-  function handleStepChange(step: WinterizeStep) {
-    /*
-    if (!winterizeSequence) return;
-    const updatedSteps = winterizeSequence.steps.map((s) => {
-      return s.id === step.id ? step : s;
-    });
-    setWinterizeSequence({
-      ...winterizeSequence,
-      steps: updatedSteps,
-    });
-    */
-  }
+  function handleSelectedChange(e: React.ChangeEvent<HTMLInputElement>) {
+    updateWinterizeStep(step.id, { selected: !step.selected });
+  };
 
   function handleBlowOutTimeChange(e: React.ChangeEvent<HTMLInputElement>) {
-    setBlowOutTime(Number(e.target.value));
+    updateWinterizeStep(step.id, { blowOutTime: parseInt(e.target.value, 10) });
   };
 
   function handleRecoveryTimeChange(e: React.ChangeEvent<HTMLInputElement>) {
-    setRecoveryTime(Number(e.target.value));
+    updateWinterizeStep(step.id, { recoveryTime: parseInt(e.target.value, 10) });
   };
 
   return (
@@ -59,16 +39,16 @@ export const WinterizeTableRow = ({ step }: WinterizeTableRowProps): JSX.Element
         {/* { isActive } */}
       </td>
       <td>
-        <input type='checkbox' checked={selected} onChange={() => setSelected(!selected)} />
+        <input type='checkbox' checked={step.selected} onChange={handleSelectedChange} />
       </td>
       <td>
         {step.name}
       </td>
       <td>
-        <input type="number" value={blowOutTime} onChange={handleBlowOutTimeChange} />
+        <input type="number" value={step.blowOutTime} onChange={handleBlowOutTimeChange} />
       </td>
       <td>
-        <input type="number" value={recoveryTime} onChange={handleRecoveryTimeChange} />
+        <input type="number" value={step.recoveryTime} onChange={handleRecoveryTimeChange} />
       </td>
     </tr>
   );

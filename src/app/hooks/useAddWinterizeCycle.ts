@@ -16,6 +16,7 @@ export const useAddWinterizeCycle = () => {
       const zoneList = Array.isArray(zones) ? zones : [zones];
 
       const steps: WinterizeStep[] = zoneList.map((zone) => ({
+        id: crypto.randomUUID(),
         name: zone.name,
         active: false,
         selected: true,

@@ -20,6 +20,7 @@ const initialWinterizeState = {
 interface WinterizeStoreActions {
   setSelectedDevice: (selectedDevice: Device) => void;
   addWinterizeSteps: (steps: WinterizeStep[]) => void;
+  updateWinterizeStep: (id: string, updatedStep: Partial<WinterizeStep>) => void;
 }
 
 interface WinterizeStoreState {
@@ -53,6 +54,12 @@ const useWinterizeStore = create<WinterizeStoreState>()(
       addWinterizeSteps: (steps: WinterizeStep[]) => set((state) => ({
         ...state,
         winterizeSequence: [...state.winterizeSequence, ...steps],
+      })),
+      updateWinterizeStep: (id, updatedFields) => set((state) => ({
+        ...state,
+        winterizeSequence: state.winterizeSequence.map((step) =>
+          step.id === id ? { ...step, ...updatedFields } : step
+        ),
       })),
     },
   }))

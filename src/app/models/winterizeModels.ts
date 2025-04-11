@@ -6,7 +6,7 @@ export type WinterizeSettings = {
 }
 
 export type WinterizeStep = {
-  // id: string;
+  id: string;
   name: string;
   active: boolean;
   selected: boolean;
