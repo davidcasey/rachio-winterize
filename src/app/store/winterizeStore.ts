@@ -14,6 +14,7 @@ const initialWinterizeState = {
   devices: null,
   zones: null,
   selectedDevice: null,
+  activeStep: null, 
   winterizeSequence: [],
 };
 
@@ -21,6 +22,7 @@ interface WinterizeStoreActions {
   setSelectedDevice: (selectedDevice: Device) => void;
   addWinterizeSteps: (steps: WinterizeStep[]) => void;
   updateWinterizeStep: (id: string, updatedStep: Partial<WinterizeStep>) => void;
+  setActiveStep: (activeStep: WinterizeStep | null) => void, 
 }
 
 interface WinterizeStoreState {
@@ -34,6 +36,7 @@ interface WinterizeStoreState {
   zones: Zone[] | null;
   // Winterize
   selectedDevice: Device | null;
+  activeStep: WinterizeStep | null, 
   winterizeSequence: WinterizeStep[];
   actions: WinterizeStoreActions;
 };
@@ -60,6 +63,10 @@ const useWinterizeStore = create<WinterizeStoreState>()(
         winterizeSequence: state.winterizeSequence.map((step) =>
           step.id === id ? { ...step, ...updatedFields } : step
         ),
+      })),
+      setActiveStep: (activeStep: WinterizeStep | null) => set((state) => ({
+        ...state,
+        activeStep
       })),
     },
   }))
@@ -128,15 +135,10 @@ export const useWinterizeError = () => useWinterize((state) => state.error);
 export const useWinterizeHydrated = () => useWinterize((state) => state.hydrated);
 
 export const useDevices = () => useWinterize((state) => state.devices);
-export const useSelectedDevice = () => useWinterize((state) => state.selectedDevice);
 export const useZones = () => useWinterize((state) => state.zones);
+export const useSelectedDevice = () => useWinterize((state) => state.selectedDevice);
+export const useActiveStep = () => useWinterize((state) => state.activeStep);
+export const useIsBlowoutRunning = () => useWinterize((state) => !!state.activeStep);
 export const useWinterizeSequence = () => useWinterize((state) => state.winterizeSequence);
 
 export const useWinterizeActions = () => useWinterize((state) => state.actions);
-
-      /*
-      setActiveStep: (activeStep: WinterizeStep) => set((state) => ({
-        ...state,
-        activeStep,
-      })),
-      */

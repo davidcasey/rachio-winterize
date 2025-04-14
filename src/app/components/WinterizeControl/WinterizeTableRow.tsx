@@ -33,7 +33,7 @@ export const WinterizeTableRow = ({ step }: WinterizeTableRowProps): JSX.Element
   };
 
   return (
-    <tr>
+    <>
       <td>
         {/* { isActive } */}
       </td>
@@ -49,6 +49,6 @@ export const WinterizeTableRow = ({ step }: WinterizeTableRowProps): JSX.Element
       <td>
         <input type="number" value={step.recoveryTime} onChange={handleRecoveryTimeChange} />
       </td>
-    </tr>
+    </>
   );
 } 

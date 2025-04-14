@@ -6,6 +6,7 @@ import { WinterizeSettingsContext } from 'app/context/WinterizeSettingsContext';
 import { useSelectedDevice, useZones, useWinterizeSequence } from 'app/store/winterizeStore';
 import { useAddWinterizeCycle } from 'app/hooks/useAddWinterizeCycle';
 import { useDuplicatePreviousCycle } from 'app/hooks/useDuplicatePreviousCycle';
+import { useWinterizeBlowout } from 'app/hooks/useWinterizeBlowout';
 
 import { WinterizeTableRow } from 'app/components/WinterizeControl/WinterizeTableRow';
 import { BlowOutTime } from 'app/components/WinterizeControl/BlowOutTime';
@@ -27,11 +28,21 @@ const Table = styled.table `
 `;
 
 export const WinterizeTable = (): JSX.Element => {
-  const {winterizeSettings} = useContext(WinterizeSettingsContext);
+  const { blowOutTime, recoveryTime } = useContext(WinterizeSettingsContext).winterizeSettings;
   const selectedDevice = useSelectedDevice();
   const zones = useZones();
   const winterizeSequence = useWinterizeSequence();
   const addWinterizeCycle = useAddWinterizeCycle();
+
+  const {
+    isBlowoutRunning,
+    activeStep,
+    startBlowout,
+    stopBlowout
+  } = useWinterizeBlowout(
+    blowOutTime,
+    recoveryTime
+  );
 
   /**
    * renderWinterizeRows
@@ -44,6 +55,7 @@ export const WinterizeTable = (): JSX.Element => {
     return (
       <>
         {winterizeSequence.map((step) => {
+          const isActive = activeStep?.id === step.id;
           const isNewCycle = !seenCycleIds.has(step.cycleId);
 
           if (isNewCycle) {
@@ -60,7 +72,9 @@ export const WinterizeTable = (): JSX.Element => {
                   </td>
                 </tr>
               )}
-              <WinterizeTableRow step={step} />
+              <tr className={isActive ? 'active' : ''}>
+                <WinterizeTableRow step={step} />
+              </tr>
             </Fragment>
           );
         })}
@@ -89,7 +103,11 @@ export const WinterizeTable = (): JSX.Element => {
           <button
             type="button"
             onClick={() => {
-              addWinterizeCycle(zones, winterizeSettings.blowOutTime, winterizeSettings.recoveryTime);
+              addWinterizeCycle(
+                zones,
+                blowOutTime,
+                recoveryTime
+              );
             }}
           >
             Add new cycle
@@ -104,15 +122,14 @@ export const WinterizeTable = (): JSX.Element => {
   /**
    * return WinterizeTable JSX
    */
-  return selectedDevice && zones && (
+  if (!selectedDevice || !zones) return <></>;
+  return  (
     <>
       <h2>{selectedDevice.name}</h2>
       <Table>
         <thead>
           <tr>
-            <th>
-              {/* isActive */ }
-            </th>
+            <th>{/* isActive */}</th>
             <th>Enabled</th>
             <th>Zone Name</th>
             <th>Blow Out Time (seconds)</th>
@@ -126,12 +143,16 @@ export const WinterizeTable = (): JSX.Element => {
           {renderAddCycleRow(zones)}
           <tr>
             <td colSpan={100}>
-              <button>Cancel</button>
-              <button>Start blowout</button>
+              <button type="button" onClick={stopBlowout} disabled={!isBlowoutRunning}>
+                Cancel
+              </button>
+              <button type="button" onClick={startBlowout} disabled={isBlowoutRunning}>
+                Start blowout
+              </button>
             </td>
           </tr>
         </tfoot>
       </Table>
     </>
-  ) || <></>;
+  );
 }
