@@ -6,6 +6,7 @@ const API_BASE_URL = process.env.NEXT_PUBLIC_RACHIO_API_BASE_URL;
 if (!API_BASE_URL) {
   throw new Error('API_BASE_URL is not defined in environment variables.');
 }
+const isDev = process.env.NODE_ENV === 'development';
 
 /**
  * Fetch the entity id using the private API key
@@ -133,7 +134,12 @@ export const useEntity = ({ enabled = true } = {}) => {
   });
 };
 
-export const useStopWatering = () => {
+export const useStopWatering = (deviceId: string) => {
+  if (isDev) {
+    console.info(`[DEV] stopAllWatering called with ${deviceId}`);
+    return new Promise((res) => setTimeout(res, 500));
+  }
+
   const queryClient = useQueryClient();
   return useMutation<void, Error, string>({
     mutationFn: async (deviceId) => {
@@ -152,7 +158,12 @@ export const useStopWatering = () => {
   });
 };
 
-export const useStartZoneWatering = () => {
+export const useStartZoneWatering = (zoneId: string, duration: number) => {
+  if (isDev) {
+    console.info(`[DEV] startZoneWatering called for zone ${zoneId} (${duration} sec)`);
+    return new Promise((res) => setTimeout(res, 500));
+  }
+
   const queryClient = useQueryClient();
   return useMutation<void, Error, { zoneId: string; duration: number }>({
     mutationFn: async ({ zoneId, duration }) => {
