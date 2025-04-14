@@ -1,4 +1,4 @@
-import { JSX, useEffect, useState } from 'react';
+import { JSX } from 'react';
 
 import { WinterizeStep } from 'app/models/winterizeModels';
 import { useWinterizeActions } from 'app/store/winterizeStore';
@@ -20,9 +20,8 @@ export type WinterizeTableRowProps = {
 export const WinterizeTableRow = ({ step }: WinterizeTableRowProps): JSX.Element => {
   const { updateWinterizeStep } = useWinterizeActions();
 
-
   function handleSelectedChange(e: React.ChangeEvent<HTMLInputElement>) {
-    updateWinterizeStep(step.id, { selected: !step.selected });
+    updateWinterizeStep(step.id, { selected: e.target.checked });
   };
 
   function handleBlowOutTimeChange(e: React.ChangeEvent<HTMLInputElement>) {

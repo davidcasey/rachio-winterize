@@ -11,9 +11,10 @@ export const useAddWinterizeCycle = () => {
     (
       zones: Zone | Zone[],
       blowOutTime: number,
-      recoveryTime: number
+      recoveryTime: number,
     ) => {
       const zoneList = Array.isArray(zones) ? zones : [zones];
+      const cycleId = crypto.randomUUID(); 
 
       const steps: WinterizeStep[] = zoneList.map((zone) => ({
         id: crypto.randomUUID(),
@@ -23,6 +24,7 @@ export const useAddWinterizeCycle = () => {
         blowOutTime,
         recoveryTime,
         zone,
+        cycleId,
       }));
 
       addWinterizeSteps(steps);

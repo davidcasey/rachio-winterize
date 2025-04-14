@@ -13,6 +13,7 @@ export type WinterizeStep = {
   blowOutTime: number;
   recoveryTime: number;
   zone: Zone;
+  cycleId: string;
 }
 
 // export type WinterizeSequence = {
