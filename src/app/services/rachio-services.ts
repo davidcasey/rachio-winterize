@@ -134,15 +134,15 @@ export const useEntity = ({ enabled = true } = {}) => {
   });
 };
 
-export const useStopWatering = (deviceId: string) => {
-  if (isDev) {
-    console.info(`[DEV] stopAllWatering called with ${deviceId}`);
-    return new Promise((res) => setTimeout(res, 500));
-  }
-
+export const useStopWatering = () => {
   const queryClient = useQueryClient();
   return useMutation<void, Error, string>({
     mutationFn: async (deviceId) => {
+      if (isDev) {
+        console.info(`[DEV] stopAllWatering called with ${deviceId}`);
+        return new Promise((res) => setTimeout(res, 500));
+      }
+
       await stopAllWatering(deviceId);
     },
     onSuccess: () => {
@@ -158,15 +158,15 @@ export const useStopWatering = (deviceId: string) => {
   });
 };
 
-export const useStartZoneWatering = (zoneId: string, duration: number) => {
-  if (isDev) {
-    console.info(`[DEV] startZoneWatering called for zone ${zoneId} (${duration} sec)`);
-    return new Promise((res) => setTimeout(res, 500));
-  }
-
+export const useStartZoneWatering = () => {
   const queryClient = useQueryClient();
   return useMutation<void, Error, { zoneId: string; duration: number }>({
     mutationFn: async ({ zoneId, duration }) => {
+      if (isDev) {
+        console.info(`[DEV] startZoneWatering called for zone ${zoneId} (${duration} sec)`);
+        return new Promise((res) => setTimeout(res, 500));
+      }
+
       await startZoneWatering(zoneId, duration);
     },
     onSuccess: () => {
