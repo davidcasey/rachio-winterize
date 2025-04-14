@@ -1,4 +1,5 @@
 import { JSX, useContext, Fragment } from 'react';
+import styled from 'styled-components';
 
 import { Zone } from 'app/models/rachioModels';
 import { WinterizeSettingsContext } from 'app/context/WinterizeSettingsContext';
@@ -9,6 +10,21 @@ import { useDuplicatePreviousCycle } from 'app/hooks/useDuplicatePreviousCycle';
 import { WinterizeTableRow } from 'app/components/WinterizeControl/WinterizeTableRow';
 import { BlowOutTime } from 'app/components/WinterizeControl/BlowOutTime';
 import { RecoveryTime } from 'app/components/WinterizeControl/RecoveryTime';
+
+const Table = styled.table `
+  tr.bg-gray-100 {
+    background-color: #333;
+  }
+  tr.active {
+    background-color: #d1f7c4; /* Light green background for active row */
+  }
+  td:first-child {
+    text-align: center;
+  }
+  tr.active td:first-child:before {
+    content: '▶';
+  }
+`;
 
 export const WinterizeTable = (): JSX.Element => {
   const {winterizeSettings} = useContext(WinterizeSettingsContext);
@@ -91,7 +107,7 @@ export const WinterizeTable = (): JSX.Element => {
   return selectedDevice && zones && (
     <>
       <h2>{selectedDevice.name}</h2>
-      <table>
+      <Table>
         <thead>
           <tr>
             <th>
@@ -108,8 +124,14 @@ export const WinterizeTable = (): JSX.Element => {
         </tbody>
         <tfoot>
           {renderAddCycleRow(zones)}
+          <tr>
+            <td colSpan={100}>
+              <button>Cancel</button>
+              <button>Start blowout</button>
+            </td>
+          </tr>
         </tfoot>
-      </table>
+      </Table>
     </>
   ) || <></>;
 }
