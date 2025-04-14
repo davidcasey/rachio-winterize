@@ -21,6 +21,13 @@ export const WinterizeControl = (): JSX.Element => {
   const { setSelectedDevice } = useWinterizeActions();
   const winterizeSequence = useWinterizeSequence();
 
+  // Calling setDevice(devices[0]) directly during render is a bad idea in React — it can cause a 
+  // render loop because state is updating during rendering. useEffect to be safe.
+  useEffect(() => {
+    if (devices?.length === 1) {
+      setDevice(devices[0]);
+    }
+  }, [devices, setDevice]);
 
   // TEMPORARY DEBUGGING!
   const zones = useZones();
@@ -40,9 +47,9 @@ export const WinterizeControl = (): JSX.Element => {
 
   return (
     <WinterizeSettingsContext.Provider value={{winterizeSettings, setWinterizeSettings}}>
-      {/* {devices.length > 1 && ( */}
-        { devices && <DeviceSelector devices={devices} onChange={setDevice} /> }
-      {/* )} */}
+      {devices && devices.length > 1 && (
+        <DeviceSelector devices={devices} onChange={setDevice} />
+      )}
       { selectedDevice && <WinterizeTable /> }
     </WinterizeSettingsContext.Provider>
   );

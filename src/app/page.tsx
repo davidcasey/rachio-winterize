@@ -15,7 +15,7 @@ export default function Home() {
       <div>
         <h2>About this application</h2>
         <p>
-          Use this app to help you winterize your Rachio system by blowing out the zones with air. 
+          Use this app to help you winterize your Rachio sprinkler system by blowing out the zones with air. 
           It is important to follow the recommendations below to prevent damage to your system.
         </p>
         <ul>
