@@ -1,4 +1,3 @@
-// useAddWinterizeCycle.ts
 import { useCallback } from 'react';
 import { Zone } from 'app/models/rachioModels';
 import { WinterizeStep } from 'app/models/winterizeModels';
