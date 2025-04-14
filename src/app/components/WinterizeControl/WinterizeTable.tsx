@@ -21,38 +21,42 @@ export const WinterizeTable = (): JSX.Element => {
    * renderWinterizeRows
    * @returns JSX
    */
-  function renderWinterizeRows() {
+  function renderWinterizeRows(): JSX.Element {
     const seenCycleIds = new Set<string>();
     let cycleCount = 0;
 
-    return winterizeSequence.map((step) => {
-      const isNewCycle = !seenCycleIds.has(step.cycleId);
+    return (
+      <>
+        {winterizeSequence.map((step) => {
+          const isNewCycle = !seenCycleIds.has(step.cycleId);
 
-      if (isNewCycle) {
-        seenCycleIds.add(step.cycleId);
-        cycleCount += 1;
-      }
+          if (isNewCycle) {
+            seenCycleIds.add(step.cycleId);
+            cycleCount += 1;
+          }
 
-      return (
-        <Fragment key={step.id}>
-          {isNewCycle && (
-            <tr className="bg-gray-100 text-sm text-gray-600">
-              <td colSpan={100} className="py-2 px-4">
-                Cycle {cycleCount}
-              </td>
-            </tr>
-          )}
-          <WinterizeTableRow step={step} />
-        </Fragment>
-      );
-    });
+          return (
+            <Fragment key={step.id}>
+              {isNewCycle && (
+                <tr className="bg-gray-100 text-sm text-gray-600">
+                  <td colSpan={100} className="py-2 px-4">
+                    Cycle {cycleCount}
+                  </td>
+                </tr>
+              )}
+              <WinterizeTableRow step={step} />
+            </Fragment>
+          );
+        })}
+      </>
+    );
   }
 
   /**
    * renderAddCycleRow
    * @returns JSX
    */
-  function renderAddCycleRow(zones: Zone[]) {
+  function renderAddCycleRow(zones: Zone[]): JSX.Element {
     const { duplicateLastCycle, hasPreviousCycle } = useDuplicatePreviousCycle();
   
     return (

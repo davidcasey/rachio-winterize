@@ -1,6 +1,6 @@
 import { useCallback } from 'react';
-import { useWinterizeSequence, useWinterizeActions } from 'app/store/winterizeStore';
 import { WinterizeStep } from 'app/models/winterizeModels';
+import { useWinterizeSequence, useWinterizeActions } from 'app/store/winterizeStore';
 
 export const useDuplicatePreviousCycle = () => {
   const winterizeSequence = useWinterizeSequence();
