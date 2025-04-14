@@ -1,4 +1,5 @@
 'use client';
+import { DEFAULT_BLOW_OUT_TIME, DEFAULT_RECOVERY_TIME } from 'app/constants/winterizeDefaults';
 import { useIsAuth } from 'app/hooks/useAuth';
 import { LoginForm } from 'app/components/LoginForm';
 import { WinterizeControl } from 'app/components/WinterizeControl/WinterizeControl';
@@ -16,8 +17,8 @@ export default function Home() {
       <ul>
         <li>Air pressure must not exceed 50 pounds per square inch (psi).</li>
         <li>Do not run equipment for longer than 1 minute on air.</li>
-        <li>Default time to blow out each zone: 35 seconds</li>
-        <li>Default time for air compressor recovery: 300 seconds</li>
+        <li>Default time to blow out each zone: {DEFAULT_BLOW_OUT_TIME} seconds</li>
+        <li>Default time for air compressor recovery: {DEFAULT_RECOVERY_TIME} seconds</li>
       </ul>
       <br /><br />
         {

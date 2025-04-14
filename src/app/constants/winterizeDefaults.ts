@@ -1,0 +1,2 @@
+export const DEFAULT_BLOW_OUT_TIME = 35;
+export const DEFAULT_RECOVERY_TIME = 300;

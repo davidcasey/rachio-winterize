@@ -1,4 +1,4 @@
-import { Device, Zone } from 'app/models/rachioModels';
+import { Zone } from 'app/models/rachioModels';
 
 export type WinterizeSettings = {
   blowOutTime: number;
@@ -15,10 +15,3 @@ export type WinterizeStep = {
   zone: Zone;
   cycleId: string;
 }
-
-// export type WinterizeSequence = {
-//   id: string;
-//   name: string;
-//   selectedDevice: Device;
-//   steps: WinterizeStep[];
-// }
