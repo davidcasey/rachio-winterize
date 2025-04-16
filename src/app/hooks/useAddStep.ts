@@ -14,7 +14,7 @@ type StepInput = {
   cycleId: string;
   selected?: boolean;
 };
-export const useAddWinterizeStep = () => {
+export const useAddStep = () => {
   const { addWinterizeSteps } = useWinterizeActions();
 
   return useCallback(
