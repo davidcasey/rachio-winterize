@@ -3,9 +3,10 @@ import styled from 'styled-components';
 
 import { Zone } from 'app/models/rachioModels';
 import { WinterizeSettingsContext } from 'app/context/WinterizeSettingsContext';
-import { useSelectedDevice, useZones, useWinterizeSequence } from 'app/store/winterizeStore';
+import { useSelectedDevice, useZones, useWinterizeSequence, useWinterizeActions } from 'app/store/winterizeStore';
 import { useAddCycle } from 'app/hooks/useAddCycle';
-import { useAddDuplicatePreviousCycle } from 'app/hooks/useAddDuplicateCycle';
+import { useAddDuplicateCycle } from 'app/hooks/useAddDuplicateCycle';
+import { useDeleteCycle } from 'app/hooks/useDeleteCycle';
 import { useBlowout } from 'app/hooks/useBlowout';
 
 import { WinterizeTableRow } from 'app/components/WinterizeControl/WinterizeTableRow';
@@ -32,7 +33,10 @@ export const WinterizeTable = (): JSX.Element => {
   const selectedDevice = useSelectedDevice();
   const zones = useZones();
   const winterizeSequence = useWinterizeSequence();
+  const { resetWinterizeSequence } = useWinterizeActions();
   const addCycle = useAddCycle();
+  const duplicateCycle = useAddDuplicateCycle();
+  const deleteCycle = useDeleteCycle();
 
   const {
     isBlowoutRunning,
@@ -69,6 +73,10 @@ export const WinterizeTable = (): JSX.Element => {
                 <tr className="bg-gray-100 text-sm text-gray-600">
                   <td colSpan={100} className="py-2 px-4">
                     Cycle {cycleCount}
+                    <span className="space-x-2">
+                      <button onClick={() => duplicateCycle(step.cycleId)}>Duplicate below</button>
+                      <button onClick={() => deleteCycle(step.cycleId)}>Delete</button>
+                    </span>
                   </td>
                 </tr>
               )}
@@ -87,19 +95,9 @@ export const WinterizeTable = (): JSX.Element => {
    * @returns JSX
    */
   function renderAddCycleRow(zones: Zone[]): JSX.Element {
-    const { duplicateLastCycle, hasPreviousCycle } = useAddDuplicatePreviousCycle();
-  
     return (
       <tr aria-label="Add a new cycle">
         <td colSpan={3}>
-          <button
-            type="button"
-            disabled={!hasPreviousCycle}
-            onClick={duplicateLastCycle}
-          >
-            Duplicate previous cycle
-          </button>
-  
           <button
             type="button"
             onClick={() => {
@@ -129,11 +127,15 @@ export const WinterizeTable = (): JSX.Element => {
       <Table>
         <thead>
           <tr>
+            <th colSpan={3}></th>
+            <th colSpan={2}>Time (seconds)</th>
+          </tr>
+          <tr>
             <th>{/* isActive */}</th>
             <th>Enabled</th>
-            <th>Zone Name</th>
-            <th>Blow Out Time (seconds)</th>
-            <th>Recovery Time (seconds)</th>
+            <th>Zone name</th>
+            <th>Blow out</th>
+            <th>Recovery</th>
           </tr>
         </thead>
         <tbody>
@@ -143,6 +145,9 @@ export const WinterizeTable = (): JSX.Element => {
           {renderAddCycleRow(zones)}
           <tr>
             <td colSpan={100}>
+              <button type="button" onClick={resetWinterizeSequence} disabled={isBlowoutRunning || winterizeSequence.length === 0}>
+                Reset table
+              </button>
               <button type="button" onClick={stopBlowout} disabled={!isBlowoutRunning}>
                 Cancel
               </button>
