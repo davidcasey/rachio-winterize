@@ -9,10 +9,10 @@ import {
 } from 'app/store/winterizeStore';
 
 /**
- * useWinterizeBlowout
+ * useBlowout
  * This hook manages the sequencing of blowout steps with delay between each.
  */
-export const useWinterizeBlowout = (blowOutTime: number, recoveryTime: number) => {
+export const useBlowout = (blowOutTime: number, recoveryTime: number) => {
   // winterizeStore
   const selectedDevice = useSelectedDevice();
   const winterizeSequence = useWinterizeSequence();
@@ -88,7 +88,7 @@ export const useWinterizeBlowout = (blowOutTime: number, recoveryTime: number) =
   };
 
   /**
-   * If a component using useWinterizeBlowout gets unmounted while a blowout sequence is running or
+   * If a component using useBlowout gets unmounted while a blowout sequence is running or
    * scheduled, this clears any setTimeout that would otherwise fire after the component is gone.
    */
   useEffect(() => {

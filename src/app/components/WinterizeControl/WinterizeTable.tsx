@@ -4,9 +4,9 @@ import styled from 'styled-components';
 import { Zone } from 'app/models/rachioModels';
 import { WinterizeSettingsContext } from 'app/context/WinterizeSettingsContext';
 import { useSelectedDevice, useZones, useWinterizeSequence } from 'app/store/winterizeStore';
-import { useAddWinterizeCycle } from 'app/hooks/useAddWinterizeCycle';
-import { useDuplicatePreviousCycle } from 'app/hooks/useDuplicatePreviousCycle';
-import { useWinterizeBlowout } from 'app/hooks/useWinterizeBlowout';
+import { useAddCycle } from 'app/hooks/useAddCycle';
+import { useAddDuplicatePreviousCycle } from 'app/hooks/useAddDuplicateCycle';
+import { useBlowout } from 'app/hooks/useBlowout';
 
 import { WinterizeTableRow } from 'app/components/WinterizeControl/WinterizeTableRow';
 import { BlowOutTime } from 'app/components/WinterizeControl/BlowOutTime';
@@ -32,14 +32,14 @@ export const WinterizeTable = (): JSX.Element => {
   const selectedDevice = useSelectedDevice();
   const zones = useZones();
   const winterizeSequence = useWinterizeSequence();
-  const addWinterizeCycle = useAddWinterizeCycle();
+  const addCycle = useAddCycle();
 
   const {
     isBlowoutRunning,
     activeStep,
     startBlowout,
     stopBlowout
-  } = useWinterizeBlowout(
+  } = useBlowout(
     blowOutTime,
     recoveryTime
   );
@@ -87,7 +87,7 @@ export const WinterizeTable = (): JSX.Element => {
    * @returns JSX
    */
   function renderAddCycleRow(zones: Zone[]): JSX.Element {
-    const { duplicateLastCycle, hasPreviousCycle } = useDuplicatePreviousCycle();
+    const { duplicateLastCycle, hasPreviousCycle } = useAddDuplicatePreviousCycle();
   
     return (
       <tr aria-label="Add a new cycle">
@@ -103,7 +103,7 @@ export const WinterizeTable = (): JSX.Element => {
           <button
             type="button"
             onClick={() => {
-              addWinterizeCycle(
+              addCycle(
                 zones,
                 blowOutTime,
                 recoveryTime

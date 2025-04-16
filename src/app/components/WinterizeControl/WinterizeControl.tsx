@@ -12,10 +12,12 @@ import {
 } from 'app/store/winterizeStore';
 
 import { DeviceSelector } from 'app/components/WinterizeControl/DeviceSelector';
+import { SequenceTrainer } from 'app/components/WinterizeControl/SequenceTrainer';
 import { WinterizeTable } from 'app/components/WinterizeControl/WinterizeTable';
   
 export const WinterizeControl = (): JSX.Element => {
   const [winterizeSettings, setWinterizeSettings] = useState<WinterizeSettings>(winterizeSettingsDefault);
+  const [showSequenceTrainer, setShowSequenceTrainer] = useState<boolean>(false);
   const devices = useDevices();
   const selectedDevice = useSelectedDevice();
   const { setSelectedDevice } = useWinterizeActions();
@@ -50,7 +52,11 @@ export const WinterizeControl = (): JSX.Element => {
       {devices && devices.length > 1 && (
         <DeviceSelector devices={devices} onChange={setDevice} />
       )}
-      { selectedDevice && <WinterizeTable /> }
+      <button type="button" onClick={() => setShowSequenceTrainer(!showSequenceTrainer)}>
+        Learn mode
+      </button>
+      {showSequenceTrainer && <SequenceTrainer />}
+      {selectedDevice && <WinterizeTable />}
     </WinterizeSettingsContext.Provider>
   );
 }
