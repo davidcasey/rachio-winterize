@@ -21,7 +21,16 @@ export const SequenceTrainer = (): JSX.Element => {
   }
 
   function renderInstructions() {
-    return <p>Press Start to train the app to blow out your sprinkler system.</p>;
+    return (
+      <>
+        <p>You’ve entered training mode for your sprinkler system blowout!</p>
+        <p>Before starting, ensure your air compressor is ready and all hoses and pipes are securely connected. The blowout and training will begin immediately once you press “Start.”</p>
+        <p>Press “Next” to move on to the next step or zone.</p>
+        <p>Press “Skip” to skip one or more zones while the current zone is still in progress.</p>
+        <p>Press “Complete” to finish the training. All results will be displayed in the table.</p>
+        <p>Upon completion, fine-tune any of the learned values in the table as needed. Edits are saved instantly.</p>
+      </>
+    )
   }
 
   function renderCurrentStep() {
