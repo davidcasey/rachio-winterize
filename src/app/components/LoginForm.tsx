@@ -1,4 +1,5 @@
 import { JSX, useState } from 'react';
+import { Button, Input, Link } from '@mui/material';
 import { useSetAuthToken } from 'app/store/authStore';
 import { getIsAuth } from 'app/hooks/useAuth';
 
@@ -19,13 +20,11 @@ export const LoginForm = (): JSX.Element => {
     <form onSubmit={handleSubmit}>
       <label htmlFor="apiKey">
         API Token 
-        <small>
-          <a href="https://rachio.readme.io/docs/authentication" target="_blank">
-            locate your token
-          </a>
-        </small>
+        <Link href="https://rachio.readme.io/docs/authentication" target="_blank">
+          locate your token
+        </Link>
       </label>
-      <input
+      <Input
         id="apiKey"
         type="text"
         placeholder="Enter your API key"
@@ -34,8 +33,9 @@ export const LoginForm = (): JSX.Element => {
           setError(null);
         }}
         value={token}
+        style={{ width: 320 }}
       />
-      <button type="submit">Submit</button>
+      <Button type="submit">Submit</Button>
       {error && <p className="error">{error}</p>}
       <p>
         Your Rachio API token is never stored on the server and only used for the duration of your session. Accessing the site over a public network is not recommended.

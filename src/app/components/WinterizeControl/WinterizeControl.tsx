@@ -1,4 +1,5 @@
 import { JSX, useEffect, useState } from 'react';
+import { Button } from '@mui/material';
 
 import { Device } from 'app/models/rachioModels';
 import { WinterizeSettings } from 'app/models/winterizeModels';
@@ -52,10 +53,17 @@ export const WinterizeControl = (): JSX.Element => {
       {devices && devices.length > 1 && (
         <DeviceSelector devices={devices} onChange={setDevice} />
       )}
-      <button type="button" onClick={() => setShowSequenceTrainer(!showSequenceTrainer)}>
-        Learn mode
-      </button>
-      {showSequenceTrainer && <SequenceTrainer />}
+      { !showSequenceTrainer ? (
+        <Button
+          variant="contained"
+          color="primary"
+          type="button"
+          onClick={() => setShowSequenceTrainer(!showSequenceTrainer)}
+        >
+          Training mode
+        </Button>
+      ) : (<></>)}
+      {showSequenceTrainer && <SequenceTrainer onClose={() => setShowSequenceTrainer(false)}/>}
       {selectedDevice && <WinterizeTable />}
     </WinterizeSettingsContext.Provider>
   );

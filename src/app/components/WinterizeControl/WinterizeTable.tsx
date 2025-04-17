@@ -1,5 +1,16 @@
 import { JSX, useContext, Fragment } from 'react';
 import styled from 'styled-components';
+import {
+  Box,
+  Button,
+  Table,
+  TableHead,
+  TableBody,
+  TableFooter,
+  TableRow,
+  TableCell,
+  TextField,
+} from '@mui/material';
 
 import { Zone } from 'app/models/rachioModels';
 import { WinterizeSettingsContext } from 'app/context/WinterizeSettingsContext';
@@ -13,20 +24,11 @@ import { WinterizeTableRow } from 'app/components/WinterizeControl/WinterizeTabl
 import { BlowOutTime } from 'app/components/WinterizeControl/BlowOutTime';
 import { RecoveryTime } from 'app/components/WinterizeControl/RecoveryTime';
 
-const Table = styled.table `
-  tr.bg-gray-100 {
-    background-color: #333;
-  }
-  tr.active {
-    background-color: #d1f7c4; /* Light green background for active row */
-  }
-  td:first-child {
-    text-align: center;
-  }
-  tr.active td:first-child:before {
-    content: '▶';
-  }
-`;
+const StyledTableRow = styled(TableRow)(({ theme }) => ({
+  '&.active': {
+    backgroundColor: '#d1f7c4',
+  },
+}));
 
 export const WinterizeTable = (): JSX.Element => {
   const { blowOutTime, recoveryTime } = useContext(WinterizeSettingsContext).winterizeSettings;
@@ -70,19 +72,34 @@ export const WinterizeTable = (): JSX.Element => {
           return (
             <Fragment key={step.id}>
               {isNewCycle && (
-                <tr className="bg-gray-100 text-sm text-gray-600">
-                  <td colSpan={100} className="py-2 px-4">
-                    Cycle {cycleCount}
-                    <span className="space-x-2">
-                      <button onClick={() => duplicateCycle(step.cycleId)}>Duplicate below</button>
-                      <button onClick={() => deleteCycle(step.cycleId)}>Delete</button>
-                    </span>
-                  </td>
-                </tr>
+                <TableRow
+                  sx={{
+                    backgroundColor: '#f5f5f5',
+                    borderTop: '2px solid #ddd',
+                    borderBottom: '2px solid #ddd',
+                  }}
+                >
+                  <TableCell />
+                  <TableCell colSpan={100} className="py-2 px-4">
+                    <strong>Blow out cycle {cycleCount}</strong>
+                    <Button
+                      onClick={() => duplicateCycle(step.cycleId)}
+                      sx={{ marginLeft: 3 }}
+                    >
+                      Duplicate cycle
+                    </Button>
+                    <Button
+                      onClick={() => deleteCycle(step.cycleId)}
+                      sx={{float: 'right'}}
+                    >
+                      Delete cycle
+                    </Button>
+                  </TableCell>
+                </TableRow>
               )}
-              <tr className={isActive ? 'active' : ''}>
-                <WinterizeTableRow step={step} />
-              </tr>
+              <StyledTableRow className={isActive ? 'active' : ''}>
+                <WinterizeTableRow step={step} isActive={isActive} />
+              </StyledTableRow>
             </Fragment>
           );
         })}
@@ -96,9 +113,16 @@ export const WinterizeTable = (): JSX.Element => {
    */
   function renderAddCycleRow(zones: Zone[]): JSX.Element {
     return (
-      <tr aria-label="Add a new cycle">
-        <td colSpan={3}>
-          <button
+      <TableRow
+        aria-label="Add a new cycle"
+        sx={{
+          backgroundColor: '#f5f5f5',
+          borderTop: '2px solid #ddd',
+          borderBottom: '2px solid #ddd',
+        }}
+      >
+        <TableCell colSpan={3}>
+          <Button
             type="button"
             onClick={() => {
               addCycle(
@@ -107,13 +131,18 @@ export const WinterizeTable = (): JSX.Element => {
                 recoveryTime
               );
             }}
+            sx={{ float: 'right' }}
           >
             Add new cycle
-          </button>
-        </td>
-        <td><BlowOutTime /></td>
-        <td><RecoveryTime /></td>
-      </tr>
+          </Button>
+        </TableCell>
+        <TableCell align='center'>
+          <BlowOutTime />
+        </TableCell>
+        <TableCell align='center'>
+          <RecoveryTime />
+        </TableCell>
+      </TableRow>
     );
   }
 
@@ -121,42 +150,73 @@ export const WinterizeTable = (): JSX.Element => {
    * return WinterizeTable JSX
    */
   if (!selectedDevice || !zones) return <></>;
-  return  (
+  return (
     <>
-      <h2>{selectedDevice.name}</h2>
-      <Table>
-        <thead>
-          <tr>
-            <th colSpan={3}></th>
-            <th colSpan={2}>Time (seconds)</th>
-          </tr>
-          <tr>
-            <th>{/* isActive */}</th>
-            <th>Enabled</th>
-            <th>Zone name</th>
-            <th>Blow out</th>
-            <th>Recovery</th>
-          </tr>
-        </thead>
-        <tbody>
+      <h2>Device: {selectedDevice.name}</h2>
+      <Table
+        size='small'
+        sx={{
+          border: '1px solid #ddd',
+          borderRadius: '3px',
+        }}
+      >
+        <TableHead>
+          <TableRow>
+            <TableCell colSpan={3} />
+            <TableCell colSpan={2} align='center'>Time (seconds)</TableCell>
+          </TableRow>
+          <TableRow>
+            <TableCell sx={{width: '5%'}}>{/* isActive */}</TableCell>
+            <TableCell sx={{width: '5%'}}>Enabled</TableCell>
+            <TableCell sx={{width: '50%'}}>Zone name</TableCell>
+            <TableCell sx={{width: '20%'}} align='center'>Blow out</TableCell>
+            <TableCell sx={{width: '20%'}} align='center'>Recovery</TableCell>
+          </TableRow>
+        </TableHead>
+        <TableBody>
           {renderWinterizeRows()}
-        </tbody>
-        <tfoot>
+        </TableBody>
+        <TableFooter>
           {renderAddCycleRow(zones)}
-          <tr>
-            <td colSpan={100}>
-              <button type="button" onClick={resetWinterizeSequence} disabled={isBlowoutRunning || winterizeSequence.length === 0}>
-                Reset table
-              </button>
-              <button type="button" onClick={stopBlowout} disabled={!isBlowoutRunning}>
-                Cancel
-              </button>
-              <button type="button" onClick={startBlowout} disabled={isBlowoutRunning}>
-                Start blowout
-              </button>
-            </td>
-          </tr>
-        </tfoot>
+          <TableRow>
+            <TableCell colSpan={100}>
+              {winterizeSequence.length === 0 ? (
+                <p style={{ textAlign: 'center' }}>Add at least one cycle to begin blowout</p>
+              ) : (
+                <Box
+                  display="flex"
+                  justifyContent="space-between"
+                  alignItems="center"
+                >
+                  <Button
+                    onClick={resetWinterizeSequence}
+                    disabled={isBlowoutRunning || winterizeSequence.length === 0}
+                  >
+                    Reset table
+                  </Button>
+                  <Box display="flex" gap={2}>
+                    <Button
+                      variant="contained"
+                      color="secondary"
+                      onClick={stopBlowout}
+                      disabled={!isBlowoutRunning}
+                    >
+                      Cancel
+                    </Button>
+                    <Button
+                      variant="contained"
+                      color="primary"
+                      onClick={startBlowout}
+                      disabled={isBlowoutRunning || winterizeSequence.length === 0}
+                    >
+                      Start blowout
+                    </Button>
+                  </Box>
+                </Box>
+              )}
+            </TableCell>
+          </TableRow>
+        </TableFooter>
       </Table>
     </>
   );

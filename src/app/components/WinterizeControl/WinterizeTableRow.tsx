@@ -1,4 +1,5 @@
 import { JSX } from 'react';
+import { TableCell, TextField, Checkbox } from '@mui/material';
 
 import { WinterizeStep } from 'app/models/winterizeModels';
 import { useWinterizeActions } from 'app/store/winterizeStore';
@@ -15,9 +16,10 @@ import { useWinterizeActions } from 'app/store/winterizeStore';
 
 export type WinterizeTableRowProps = {
   step: WinterizeStep;
+  isActive: boolean;
 }
 
-export const WinterizeTableRow = ({ step }: WinterizeTableRowProps): JSX.Element => {
+export const WinterizeTableRow = ({ step, isActive }: WinterizeTableRowProps): JSX.Element => {
   const { updateWinterizeStep } = useWinterizeActions();
 
   function handleSelectedChange(e: React.ChangeEvent<HTMLInputElement>) {
@@ -34,21 +36,31 @@ export const WinterizeTableRow = ({ step }: WinterizeTableRowProps): JSX.Element
 
   return (
     <>
-      <td>
-        {/* { isActive } */}
-      </td>
-      <td>
-        <input type='checkbox' checked={step.selected} onChange={handleSelectedChange} />
-      </td>
-      <td>
+      <TableCell align='center'>
+      {isActive && '▶'}
+      </TableCell>
+      <TableCell>
+        <Checkbox checked={step.selected} onChange={handleSelectedChange} />
+      </TableCell>
+      <TableCell>
         {step.name}
-      </td>
-      <td>
-        <input type="number" value={step.blowOutTime} onChange={handleBlowOutTimeChange} />
-      </td>
-      <td>
-        <input type="number" value={step.recoveryTime} onChange={handleRecoveryTimeChange} />
-      </td>
+      </TableCell>
+      <TableCell align='center'>
+        <TextField
+          type="number"
+          value={step.blowOutTime}
+          onChange={handleBlowOutTimeChange}
+          size='small'
+        />
+      </TableCell>
+      <TableCell align='center'>
+        <TextField
+          type="number"
+          value={step.recoveryTime}
+          onChange={handleRecoveryTimeChange}
+          size='small'
+        />
+      </TableCell>
     </>
   );
 } 
