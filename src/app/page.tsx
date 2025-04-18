@@ -1,5 +1,5 @@
 'use client';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import {
   AppBar,
   Toolbar,
@@ -18,6 +18,12 @@ import { WinterizeControl } from 'app/components/WinterizeControl/WinterizeContr
 export default function Home() {
   const isAuthenticated = useIsAuth();
   const [activePanel, setActivePanel] = useState<null | 'welcome' | 'instructions'>('welcome');
+
+  useEffect(() => {
+    if (isAuthenticated) {
+      togglePanel(activePanel);
+    }
+  }, [isAuthenticated]);
 
   const togglePanel = (panel: typeof activePanel) => {
     setActivePanel(prev => (prev === panel ? null : panel));
