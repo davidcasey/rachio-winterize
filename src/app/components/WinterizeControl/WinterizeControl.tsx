@@ -1,5 +1,11 @@
 import { JSX, useEffect, useState } from 'react';
-import { Button } from '@mui/material';
+import {
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
+  Button
+} from '@mui/material';
 
 import { Device } from 'app/models/rachioModels';
 import { WinterizeSettings } from 'app/models/winterizeModels';
@@ -58,12 +64,32 @@ export const WinterizeControl = (): JSX.Element => {
           variant="contained"
           color="primary"
           type="button"
+          sx={{ float: 'right' }}
           onClick={() => setShowSequenceTrainer(!showSequenceTrainer)}
         >
           Training mode
         </Button>
       ) : (<></>)}
-      {showSequenceTrainer && <SequenceTrainer onClose={() => setShowSequenceTrainer(false)}/>}
+      
+      <Dialog
+        open={showSequenceTrainer}
+        onClose={() => setShowSequenceTrainer(false)} // Close modal when clicked outside
+        maxWidth="md"  // Control the max width of the modal
+        fullWidth  // Take up full width
+      >
+        <DialogTitle>Blow out sequence trainer</DialogTitle>
+        <DialogContent>
+          {/* Your SequenceTrainer Component */}
+          <SequenceTrainer onClose={() => setShowSequenceTrainer(false)} />
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setShowSequenceTrainer(false)} color="primary">
+            Quit
+          </Button>
+        </DialogActions>
+      </Dialog>
+
+      {/* {showSequenceTrainer && <SequenceTrainer onClose={() => setShowSequenceTrainer(false)}/>} */}
       {selectedDevice && <WinterizeTable />}
     </WinterizeSettingsContext.Provider>
   );

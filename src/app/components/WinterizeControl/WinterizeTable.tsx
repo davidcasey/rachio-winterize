@@ -158,6 +158,7 @@ export const WinterizeTable = (): JSX.Element => {
         sx={{
           border: '1px solid #ddd',
           borderRadius: '3px',
+          mb: 5,
         }}
       >
         <TableHead>
@@ -197,7 +198,6 @@ export const WinterizeTable = (): JSX.Element => {
                   <Box display="flex" gap={2}>
                     <Button
                       variant="contained"
-                      color="secondary"
                       onClick={stopBlowout}
                       disabled={!isBlowoutRunning}
                     >
