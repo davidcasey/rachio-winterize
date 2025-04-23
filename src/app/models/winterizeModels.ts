@@ -8,6 +8,7 @@ export type WinterizeSettings = {
 export type WinterizeStep = {
   id: string;
   name: string;
+  active: boolean;
   selected: boolean;
   blowOutTime: number;
   recoveryTime: number;

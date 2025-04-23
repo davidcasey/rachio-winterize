@@ -73,8 +73,10 @@ export const WinterizeControl = (): JSX.Element => {
       
       <Dialog
         open={showSequenceTrainer}
-        onClose={() => setShowSequenceTrainer(false)} // Close modal when clicked outside
-        maxWidth="md"  // Control the max width of the modal
+        onClose={() => {
+          setShowSequenceTrainer(false)
+        }} // Close modal when clicked outside
+        maxWidth="sm"  // Control the max width of the modal
         fullWidth  // Take up full width
       >
         <DialogTitle>Blow out sequence trainer</DialogTitle>
