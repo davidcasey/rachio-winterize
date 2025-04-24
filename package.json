@@ -6,7 +6,8 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "deploy": "npm run build && gh-pages -d out",
+    "deploy": "npm run build && npm run move-files && gh-pages -d out/rachio-winterize",
+    "move-files": "mkdir -p out/rachio-winterize && mv out/* out/rachio-winterize/",
     "postbuild": "echo > out/.nojekyll"
   },
   "dependencies": {
