@@ -1,15 +1,14 @@
 import type { NextConfig } from "next";
 
 const isProd = process.env.NODE_ENV === 'production';
-const repoName = "rachio-winterize";
+const repoName = 'rachio-winterize';
 
-const nextConfig: NextConfig = {
-  reactStrictMode: true,
-  ...(isProd && {
-    basePath: `/${repoName}`,
-    assetPrefix: `/${repoName}/`,
-    trailingSlash: true,
-  }),
+/** @type {import('next').NextConfig} */
+const nextConfig = {
+  output: 'export',
+  basePath: isProd ? `/${repoName}` : '',
+  assetPrefix: isProd ? `/${repoName}/` : '',
+  trailingSlash: true,
 };
 
-export default nextConfig;
+module.exports = nextConfig;
