@@ -43,7 +43,7 @@ interface WinterizeStoreState {
   actions: WinterizeStoreActions;
 };
 
-const useWinterizeStore = create<WinterizeStoreState>()(
+const storeCreator = create<WinterizeStoreState>()(
   devtools((set) => ({
     ...initialWinterizeState,
     init: (devices) => set({
@@ -83,6 +83,13 @@ const useWinterizeStore = create<WinterizeStoreState>()(
     },
   }))
 );
+
+const useWinterizeStore = create(
+  process.env.NODE_ENV === 'development'
+    ? devtools(storeCreator)
+    : storeCreator
+);
+
 
 /**
  * useInitializeWinterize is an internal function that initializes the winterize store with data 
