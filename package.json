@@ -6,9 +6,9 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "deploy": "npm run build && npm run move-files && gh-pages -d out/rachio-winterize",
-    "move-files": "mkdir -p out/rachio-winterize && mv out/* out/rachio-winterize/",
-    "postbuild": "echo > out/.nojekyll"
+    "postbuild": "echo > out/.nojekyll",
+    "predeploy": "npm run build",
+    "deploy": "gh-pages -d out"
   },
   "dependencies": {
     "@emotion/react": "^11.14.0",
