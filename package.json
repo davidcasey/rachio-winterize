@@ -2,7 +2,6 @@
   "name": "rachio-winterize",
   "version": "0.1.0",
   "private": true,
-  "homepage": "https://davidcasey.github.io/rachio-winterize",
   "scripts": {
     "dev": "next dev",
     "build": "next build",

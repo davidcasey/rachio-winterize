@@ -1,6 +1,5 @@
 import { useEffect } from 'react';
 import { create } from 'zustand';
-import { devtools } from 'zustand/middleware';
 
 import { Device, Zone } from 'app/models/rachioModels';
 import { useEntity } from 'app/services/rachio-services';
@@ -43,8 +42,7 @@ interface WinterizeStoreState {
   actions: WinterizeStoreActions;
 };
 
-const storeCreator = create<WinterizeStoreState>()(
-  devtools((set) => ({
+const useWinterizeStore = create<WinterizeStoreState>()((set) => ({
     ...initialWinterizeState,
     init: (devices) => set({
       ...initialWinterizeState, // Reset everything, using the initial state
@@ -60,12 +58,12 @@ const storeCreator = create<WinterizeStoreState>()(
         ...state,
         winterizeSequence: [...state.winterizeSequence, ...steps],
       })),
-      removeWinterizeSteps: (steps: WinterizeStep[]) => {set(state => ({
+      removeWinterizeSteps: (steps: WinterizeStep[]) => set((state) => ({
+        ...state,
         winterizeSequence: state.winterizeSequence.filter(
           (step) => !steps.some((s) => s.id === step.id)
         ),
-      }));
-      },
+      })),
       updateWinterizeStep: (id, updatedFields) => set((state) => ({
         ...state,
         winterizeSequence: state.winterizeSequence.map((step) =>
@@ -76,20 +74,12 @@ const storeCreator = create<WinterizeStoreState>()(
         ...state,
         activeStep
       })),
-      resetWinterizeSequence: () => set((state) => ({
-        ...state,
+      resetWinterizeSequence: () => set(() => ({
         winterizeSequence: initialWinterizeState.winterizeSequence,
       })),
     },
-  }))
+  })
 );
-
-const useWinterizeStore = create(
-  process.env.NODE_ENV === 'development'
-    ? devtools(storeCreator)
-    : storeCreator
-);
-
 
 /**
  * useInitializeWinterize is an internal function that initializes the winterize store with data 

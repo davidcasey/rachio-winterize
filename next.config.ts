@@ -1,13 +1,15 @@
 import type { NextConfig } from "next";
 
-const repoName = "rachio-winterize"; // This should match your repo name on GitHub
+const isProd = process.env.NODE_ENV === 'production';
+const repoName = "rachio-winterize";
 
 const nextConfig: NextConfig = {
   reactStrictMode: true,
-  basePath: `/${repoName}`,
-  assetPrefix: `/${repoName}/`,
-  trailingSlash: true,
-  output: 'export',
+  ...(isProd && {
+    basePath: `/${repoName}`,
+    assetPrefix: `/${repoName}/`,
+    trailingSlash: true,
+  }),
 };
 
 export default nextConfig;
