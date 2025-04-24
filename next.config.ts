@@ -1,7 +1,12 @@
 import type { NextConfig } from "next";
 
+const repoName = "rachio-winterize"; // This should match your repo name on GitHub
+
 const nextConfig: NextConfig = {
-  /* config options here */
+  reactStrictMode: true,
+  basePath: `/${repoName}`,
+  assetPrefix: `/${repoName}/`,
+  trailingSlash: true, // Important for static export compatibility
 };
 
 export default nextConfig;

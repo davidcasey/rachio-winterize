@@ -9,7 +9,6 @@ import {
   TableFooter,
   TableRow,
   TableCell,
-  TextField,
 } from '@mui/material';
 
 import { Zone } from 'app/models/rachioModels';
@@ -24,7 +23,7 @@ import { WinterizeTableRow } from 'app/components/WinterizeControl/WinterizeTabl
 import { BlowOutTime } from 'app/components/WinterizeControl/BlowOutTime';
 import { RecoveryTime } from 'app/components/WinterizeControl/RecoveryTime';
 
-const StyledTableRow = styled(TableRow)(({ theme }) => ({
+const StyledTableRow = styled(TableRow)(() => ({
   '&.active': {
     backgroundColor: '#d1f7c4',
   },
@@ -45,10 +44,7 @@ export const WinterizeTable = (): JSX.Element => {
     activeStep,
     startBlowout,
     stopBlowout
-  } = useBlowout(
-    blowOutTime,
-    recoveryTime
-  );
+  } = useBlowout();
 
   /**
    * renderWinterizeRows

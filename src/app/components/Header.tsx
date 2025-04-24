@@ -2,7 +2,7 @@ import Link from 'next/link';
 // import { MdHomeFilled } from 'react-icons/md';
 // import { MdInfo } from 'react-icons/md';
 
-import MenuItem from 'app/components/MenuItem';
+// import MenuItem from 'app/components/MenuItem';
 
 export default function Header() {
   return (

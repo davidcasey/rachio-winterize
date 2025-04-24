@@ -1,5 +1,5 @@
 'use client';
-import { useEffect, useState } from 'react';
+import { useEffect, useCallback, useState } from 'react';
 import {
   AppBar,
   Toolbar,
@@ -19,15 +19,15 @@ export default function Home() {
   const isAuthenticated = useIsAuth();
   const [activePanel, setActivePanel] = useState<null | 'welcome' | 'instructions'>('welcome');
 
+  const togglePanel = useCallback((panel: typeof activePanel) => {
+    setActivePanel(prev => (prev === panel ? null : panel));
+  }, []);
+
   useEffect(() => {
     if (isAuthenticated) {
       togglePanel(activePanel);
     }
-  }, [isAuthenticated]);
-
-  const togglePanel = (panel: typeof activePanel) => {
-    setActivePanel(prev => (prev === panel ? null : panel));
-  };
+  }, [isAuthenticated, activePanel, togglePanel]);
 
   return (
     <Box>

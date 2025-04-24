@@ -92,7 +92,6 @@ const useWinterizeStore = create<WinterizeStoreState>()(
  */
 const useInitializeWinterize = () => {
   const isAuth = getIsAuth();
-  if (!isAuth) return;
 
   const hydrated = useWinterizeStore(state => state.hydrated);
   const loading = useWinterizeStore(state => state.loading);
@@ -129,6 +128,8 @@ const useInitializeWinterize = () => {
       useWinterizeStore.setState({ hydrated: true, loading: false, error: "No devices found." });
     }
   }, [hydrated, loading, isAuth, entityIsLoading, data, error]);
+
+  if (!isAuth) return;
 };
 
 /**

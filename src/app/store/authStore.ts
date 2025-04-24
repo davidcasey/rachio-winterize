@@ -23,7 +23,7 @@ const useAuthStore = create<AuthStorePrivate>()(
       try {
         const { id } = await fetchEntityId();
         set((state) => ({ ...state, id }));
-      } catch (e) {
+      } catch {
         set((state) => ({ ...state, token: null, id: undefined }));
       }
     },

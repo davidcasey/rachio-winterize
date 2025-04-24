@@ -45,7 +45,7 @@ const fetchEntity = async (entityId: string): Promise<Entity> => {
 
   const entity = await response.json();
 
-  const mapZone = (zone: any): Zone => ({
+  const mapZone = (zone: Zone): Zone => ({
     id: zone.id,
     name: zone.name,
     imageUrl: zone.imageUrl,
@@ -53,15 +53,15 @@ const fetchEntity = async (entityId: string): Promise<Entity> => {
     zoneNumber: zone.zoneNumber,
   });
 
-  const mapDevice = (device: any): Device => ({
+  const mapDevice = (device: Device): Device => ({
     id: device.id,
     name: device.name,
     latitude: device.latitude,
     longitude: device.longitude,
     zones: Array.isArray(device.zones)
       ? device.zones
-        .filter((zone: any) => zone.enabled)
-        .sort((a: any, b: any) => a.zoneNumber - b.zoneNumber)
+        .filter((zone: Zone) => zone.enabled)
+        .sort((a: Zone, b: Zone) => a.zoneNumber - b.zoneNumber)
         .map(mapZone)
       : [],
   });
@@ -123,15 +123,17 @@ const startZoneWatering = async (zoneId: string, duration: number): Promise<void
 export const useEntity = ({ enabled = true } = {}) => {
   const entityId = getAuthId();
   const shouldEnable = Boolean(entityId) && enabled;
-  if (!entityId) {
-    return { data: null, isLoading: false, error: null };
-  }
-  return useQuery<Entity, Error>({
+  const queryResult = useQuery<Entity, Error>({
     queryKey: ['entity', entityId],
-    queryFn: () => fetchEntity(entityId),
+    queryFn: () => (entityId ? fetchEntity(entityId) : Promise.reject('No entity ID')),
     enabled: shouldEnable,
     retry: 2,
   });
+
+  if (!entityId) {
+    return { data: null, isLoading: false, error: null };
+  }
+  return queryResult;
 };
 
 export const useStopWatering = () => {

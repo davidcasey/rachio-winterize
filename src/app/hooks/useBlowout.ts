@@ -12,7 +12,7 @@ import {
  * useBlowout
  * This hook manages the sequencing of blowout steps with delay between each.
  */
-export const useBlowout = (blowOutTime: number, recoveryTime: number) => {
+export const useBlowout = () => {
   // winterizeStore
   const selectedDevice = useSelectedDevice();
   const winterizeSequence = useWinterizeSequence();

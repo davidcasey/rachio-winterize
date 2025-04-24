@@ -1,4 +1,4 @@
-import { JSX, useEffect, useState } from 'react';
+import { JSX, useEffect, useCallback, useState } from 'react';
 import {
   Dialog,
   DialogActions,
@@ -13,8 +13,6 @@ import { WinterizeSettingsContext, winterizeSettingsDefault } from 'app/context/
 import { 
   useDevices, 
   useSelectedDevice, 
-  useZones, 
-  useWinterizeSequence,
   useWinterizeActions 
 } from 'app/store/winterizeStore';
 
@@ -28,7 +26,10 @@ export const WinterizeControl = (): JSX.Element => {
   const devices = useDevices();
   const selectedDevice = useSelectedDevice();
   const { setSelectedDevice } = useWinterizeActions();
-  const winterizeSequence = useWinterizeSequence();
+
+  const setDevice = useCallback((device: Device) => {
+    setSelectedDevice(device);
+  }, [setSelectedDevice]);
 
   // Calling setDevice(devices[0]) directly during render is a bad idea in React — it can cause a 
   // render loop because state is updating during rendering. useEffect to be safe.
@@ -37,22 +38,6 @@ export const WinterizeControl = (): JSX.Element => {
       setDevice(devices[0]);
     }
   }, [devices, setDevice]);
-
-  // TEMPORARY DEBUGGING!
-  const zones = useZones();
-  useEffect(() => {
-    console.log('selected device: ', selectedDevice);
-    console.log('zones: ', zones);
-  }, [selectedDevice]);
-  useEffect(() => {
-    console.log('winterize sequence: ', winterizeSequence);
-  }, [winterizeSequence]);
-  // END DEBUG
-
-
-  function setDevice(device: Device): void {
-    setSelectedDevice(device);
-  }
 
   return (
     <WinterizeSettingsContext.Provider value={{winterizeSettings, setWinterizeSettings}}>

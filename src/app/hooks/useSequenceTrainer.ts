@@ -2,7 +2,7 @@ import { useReducer, useEffect } from 'react';
 import { useStopWatering, useStartZoneWatering } from 'app/services/rachio-services';
 import { useZones, useSelectedDevice } from 'app/store/winterizeStore';
 import { DEFAULT_MAX_BLOW_OUT_TIME } from 'app/constants/winterizeDefaults';
-import { sequenceTrainerReducer, initialState } from 'app/reducers/SequenceTrainerReducer';
+import { sequenceTrainerReducer, initialState } from 'app/reducers/sequenceTrainerReducer';
 import { useAddStep } from 'app/hooks/useAddStep';
 
 export const useSequenceTrainer = () => {
@@ -12,13 +12,6 @@ export const useSequenceTrainer = () => {
   const zones = useZones() ?? [];
   const selectedDevice = useSelectedDevice();
   const addStep = useAddStep();
-
-  if (!zones || zones.length === 0) {
-    return { error: 'No zones available for training.' };
-  }
-  if (!selectedDevice) {
-    return { error: 'No selected device available for training.' };
-  }
 
   useEffect(() => {
     if (!state.isTraining || zones.length === 0) return;
@@ -33,6 +26,13 @@ export const useSequenceTrainer = () => {
     }, 1000);
     return () => clearInterval(interval);
   }, [zones.length, state.isTraining, state.isRecovering, state.blowOutTime]);
+
+  if (!zones || zones.length === 0) {
+    return { error: 'No zones available for training.' };
+  }
+  if (!selectedDevice) {
+    return { error: 'No selected device available for training.' };
+  }
 
   const currentZone = zones[state.currentIndex] || null;
   const nextZone = zones[state.nextIndex] || null;
