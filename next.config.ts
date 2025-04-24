@@ -6,7 +6,8 @@ const nextConfig: NextConfig = {
   reactStrictMode: true,
   basePath: `/${repoName}`,
   assetPrefix: `/${repoName}/`,
-  trailingSlash: true, // Important for static export compatibility
+  trailingSlash: true,
+  output: 'export',
 };
 
 export default nextConfig;
