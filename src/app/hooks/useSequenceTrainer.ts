@@ -1,31 +1,50 @@
 import { useReducer, useEffect } from 'react';
-import { useZones } from 'app/store/winterizeStore';
+import { useStopWatering, useStartZoneWatering } from 'app/services/rachio-services';
+import { useZones, useSelectedDevice } from 'app/store/winterizeStore';
+import { DEFAULT_MAX_BLOW_OUT_TIME } from 'app/constants/winterizeDefaults';
+import { sequenceTrainerReducer, initialState } from 'app/reducers/SequenceTrainerReducer';
 import { useAddStep } from 'app/hooks/useAddStep';
-import { trainerReducer, initialState } from 'app/hooks/trainerReducer';
 
 export const useSequenceTrainer = () => {
+  const [state, dispatch] = useReducer(sequenceTrainerReducer, initialState);
+  const stopWatering = useStopWatering();
+  const startWatering = useStartZoneWatering();
   const zones = useZones() ?? [];
-  const [state, dispatch] = useReducer(trainerReducer, initialState);
+  const selectedDevice = useSelectedDevice();
   const addStep = useAddStep();
 
+  if (!zones || zones.length === 0) {
+    return { error: 'No zones available for training.' };
+  }
+  if (!selectedDevice) {
+    return { error: 'No selected device available for training.' };
+  }
+
   useEffect(() => {
-    if (zones.length > 0 && state.isTraining) {
-      const interval = setInterval(() => {
+    if (!state.isTraining || zones.length === 0) return;
+    const interval = setInterval(() => {
+      if (!state.isRecovering) {
+        if (state.blowOutTime < DEFAULT_MAX_BLOW_OUT_TIME) {
+          dispatch({ type: 'TICK' });
+        }
+      } else {
         dispatch({ type: 'TICK' });
-      }, 1000);
-      return () => clearInterval(interval);
-    }
-  }, [zones.length, state.isTraining]);
+      }
+    }, 1000);
+    return () => clearInterval(interval);
+  }, [zones.length, state.isTraining, state.isRecovering, state.blowOutTime]);
 
   const currentZone = zones[state.currentIndex] || null;
   const nextZone = zones[state.nextIndex] || null;
   const noMoreZones = state.nextIndex === state.currentIndex;
 
-  const startTraining = () => {
+  const startTraining = async () => {
+    await startWatering.mutateAsync({ zoneId: zones[0].id, duration: DEFAULT_MAX_BLOW_OUT_TIME });
+
     dispatch({ type: 'START_TRAINING', zoneCount: zones.length });
   };
 
-  const handleNext = () => {
+  const handleNext = async () => {
     if (!currentZone) return;
 
     // If no more zones, complete the training regardless of blowout/recovery status
@@ -36,6 +55,8 @@ export const useSequenceTrainer = () => {
 
     // If in blowout, switch to recovery (don't go to the next zone yet)
     if (!state.isRecovering) {
+      await stopWatering.mutateAsync(selectedDevice.id);
+
       dispatch({ type: 'SWITCH_TO_RECOVERY' });
       return;
     }
@@ -65,6 +86,11 @@ export const useSequenceTrainer = () => {
       }
     }
 
+    await startWatering.mutateAsync({
+      zoneId: zones[state.nextIndex].id,
+      duration: DEFAULT_MAX_BLOW_OUT_TIME,
+    });
+
     dispatch({ type: 'NEXT_ZONE' });
   };
 
@@ -73,7 +99,9 @@ export const useSequenceTrainer = () => {
     dispatch({ type: 'SKIP_ZONE' });
   };
 
-  const completeTraining = () => {
+  const completeTraining = async () => {
+    await stopWatering.mutateAsync(selectedDevice.id);
+
     if (currentZone) {
       addStep({
         zone: currentZone,
@@ -110,6 +138,6 @@ export const useSequenceTrainer = () => {
     handleNext,
     handleSkip,
     completeTraining,
-    error: zones.length === 0 ? 'No zones available for training.' : null,
+    error: null,
   };
 };

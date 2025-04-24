@@ -1,4 +1,4 @@
-interface TrainerState {
+interface SequenceTrainerState {
   currentIndex: number;
   nextIndex: number;
   isTraining: boolean;
@@ -10,7 +10,7 @@ interface TrainerState {
 }
 
 // action types
-type TrainerAction =
+type SequenceTrainerAction =
   | { type: 'START_TRAINING'; zoneCount: number }
   | { type: 'TICK' }
   | { type: 'NEXT_ZONE' }
@@ -19,7 +19,7 @@ type TrainerAction =
   | { type: 'ADVANCE_CYCLE' }
   | { type: 'RESET' };
 
-export const initialState: TrainerState = {
+export const initialState: SequenceTrainerState = {
   isTraining: false,
   isRecovering: false,
   blowOutTime: 0,
@@ -30,7 +30,7 @@ export const initialState: TrainerState = {
   zoneCount: 0,
 };
 
-export const trainerReducer = (state: TrainerState, action: TrainerAction): TrainerState => {
+export const sequenceTrainerReducer = (state: SequenceTrainerState, action: SequenceTrainerAction): SequenceTrainerState => {
   switch (action.type) {
     case 'START_TRAINING':
       return {
