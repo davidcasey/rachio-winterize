@@ -12,11 +12,9 @@ import {
 import { useSetAuthToken } from 'app/store/authStore';
 import { getIsAuth } from 'app/hooks/useAuth';
 
-const API_KEY = process.env.NEXT_PUBLIC_API_KEY;
-
 export const LoginForm = (): JSX.Element => {
   const setAuthToken = useSetAuthToken();
-  const [token, setToken] = useState<string>(API_KEY || '');
+  const [token, setToken] = useState<string>('');
   const [error, setError] = useState<string | null>(null);
 
   const handleSubmit = async (e: React.SyntheticEvent<HTMLFormElement>) => {
