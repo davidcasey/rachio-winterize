@@ -1,11 +1,8 @@
+import { API_BASE_URL } from 'app/constants/winterizeDefaults';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Entity, Device, Zone } from 'app/models/rachioModels';
 import { getAuthToken, getAuthId } from 'app/store/authStore';
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_RACHIO_API_BASE_URL;
-if (!API_BASE_URL) {
-  throw new Error('API_BASE_URL is not defined in environment variables.');
-}
 const isDev = process.env.NODE_ENV === 'development';
 
 /**
