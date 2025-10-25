@@ -32,11 +32,18 @@ export const useBlowout = () => {
   const runNextStep = async () => {
     if (!selectedDevice) return;
   
-    const step = winterizeSequence[stepIndexRef.current];
+    // Find the next selected step starting from current index
+    let step = winterizeSequence[stepIndexRef.current];
+    while (step && !step.selected) {
+      stepIndexRef.current += 1;
+      step = winterizeSequence[stepIndexRef.current];
+    }
+
     if (!step) {
       stopBlowout(); // Ensure blowout is stopped if there are no more steps
       return;
     }
+    
     setActiveStep(step);
     // Start zone watering
     try {
