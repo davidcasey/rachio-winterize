@@ -7,16 +7,20 @@ import {
   Box,
   Typography,
   Collapse,
-  Container
+  Container,
+  CircularProgress,
+  Alert
 } from '@mui/material';
 
 import { DEFAULT_BLOW_OUT_TIME, DEFAULT_RECOVERY_TIME } from 'app/constants/winterizeDefaults';
 import { useIsAuth } from 'app/hooks/useAuth';
+import { useUrlState } from 'app/hooks/useUrlState';
 import { LoginForm } from 'app/components/LoginForm';
 import { WinterizeControl } from 'app/components/WinterizeControl/WinterizeControl';
 
 export default function Home() {
   const isAuthenticated = useIsAuth();
+  const { isLoadingFromUrl, urlLoadError } = useUrlState();
   const [activePanel, setActivePanel] = useState<null | 'welcome' | 'instructions'>('welcome');
 
   const togglePanel = useCallback((panel: typeof activePanel) => {
@@ -69,12 +73,26 @@ export default function Home() {
       </Collapse> */}
 
       <Container sx={{ mt: 4 }}>
-        {
-          !isAuthenticated ? 
-            <LoginForm /> :
-            <WinterizeControl />
-        }
+        {isLoadingFromUrl ? (
+          <Box display="flex" flexDirection="column" alignItems="center" gap={2} py={4}>
+            <CircularProgress />
+            <Typography>Loading your saved configuration...</Typography>
+          </Box>
+        ) : urlLoadError ? (
+          <Box>
+            <Alert severity="error" sx={{ mb: 3 }}>
+              {urlLoadError}
+            </Alert>
+            <LoginForm />
+          </Box>
+        ) : !isAuthenticated ? (
+          <LoginForm />
+        ) : (
+          <WinterizeControl />
+        )}
       </Container>
+      <br /><br />
+      <br /><br />
     </Box>
   );
 }

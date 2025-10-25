@@ -19,6 +19,7 @@ import {
 import { DeviceSelector } from 'app/components/WinterizeControl/DeviceSelector';
 import { SequenceTrainer } from 'app/components/WinterizeControl/SequenceTrainer';
 import { WinterizeTable } from 'app/components/WinterizeControl/WinterizeTable';
+import { ExportButton } from 'app/components/ExportButton';
   
 export const WinterizeControl = (): JSX.Element => {
   const [winterizeSettings, setWinterizeSettings] = useState<WinterizeSettings>(winterizeSettingsDefault);
@@ -78,6 +79,7 @@ export const WinterizeControl = (): JSX.Element => {
 
       {/* {showSequenceTrainer && <SequenceTrainer onClose={() => setShowSequenceTrainer(false)}/>} */}
       {selectedDevice && <WinterizeTable />}
+      <ExportButton />
     </WinterizeSettingsContext.Provider>
   );
 }

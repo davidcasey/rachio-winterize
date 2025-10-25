@@ -1,4 +1,4 @@
-import { useAuthId, getAuthId, useClearAuth as clearAuth } from 'app/store/authStore';
+import { useAuthId, getAuthId, getAuthToken, useClearAuth as clearAuth } from 'app/store/authStore';
 
 // for UI React components
 export const useIsAuth = () => !!useAuthId();
@@ -7,3 +7,6 @@ export const useIsAuth = () => !!useAuthId();
 export const getIsAuth = () => !!getAuthId();
 
 export const useClearAuth = () => clearAuth();
+
+// Export getAuthToken for use in non-React contexts
+export { getAuthToken };
