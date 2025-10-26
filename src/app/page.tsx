@@ -12,9 +12,11 @@ import {
   Alert,
   IconButton,
   useMediaQuery,
-  useTheme
+  useTheme,
+  Link,
 } from '@mui/material';
 import { InfoOutlined } from '@mui/icons-material';
+import GitHubIcon from '@mui/icons-material/GitHub';
 
 import { DEFAULT_BLOW_OUT_TIME, DEFAULT_RECOVERY_TIME } from 'app/constants/winterizeDefaults';
 import { useIsAuth } from 'app/hooks/useAuth';
@@ -96,6 +98,42 @@ export default function Home() {
         ) : (
           <WinterizeControl />
         )}
+        <Box
+          component="footer"
+          sx={{
+            py: 2,
+            px: 2,
+            textAlign: 'center',
+            mt: 'auto',
+            color: 'text.secondary',
+          }}
+        >
+          <Link
+            href="https://github.com/davidcasey"
+            target="_blank"
+            rel="noopener noreferrer"
+            underline="hover"
+            color="inherit"
+            sx={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: 0.5,
+              position: 'relative',
+              top: 1,
+            }}
+          >
+            Built by
+            <GitHubIcon
+              fontSize="small"
+              sx={{
+                verticalAlign: 'middle',
+                position: 'relative',
+                top: -0.5,
+              }}
+            />
+            David Casey
+          </Link>
+        </Box>
       </Container>
     </Box>
   );
