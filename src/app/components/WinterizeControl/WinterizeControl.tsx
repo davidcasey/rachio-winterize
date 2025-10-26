@@ -9,8 +9,11 @@ import {
   useTheme,
   Box,
   IconButton,
+  Typography,
+  Link,
 } from '@mui/material';
 import { Close as CloseIcon } from '@mui/icons-material';
+import GitHubIcon from '@mui/icons-material/GitHub';
 
 import { Device } from 'app/models/rachioModels';
 import { WinterizeSettings } from 'app/models/winterizeModels';
@@ -131,6 +134,42 @@ export const WinterizeControl = (): JSX.Element => {
 
       {selectedDevice && <WinterizeTable />}
       <ExportButton />
+      <Box
+        component="footer"
+        sx={{
+          py: 2,
+          px: 2,
+          textAlign: 'center',
+          mt: 'auto',
+          color: 'text.secondary',
+        }}
+      >
+        <Link
+          href="https://github.com/davidcasey"
+          target="_blank"
+          rel="noopener noreferrer"
+          underline="hover"
+          color="inherit"
+          sx={{
+            display: 'inline-flex',
+            alignItems: 'center',   // centers vertically
+            gap: 0.5,
+            position: 'relative',
+            top: 1,                 // 👈 subtle baseline tweak
+          }}
+        >
+          Built by
+          <GitHubIcon
+            fontSize="small"
+            sx={{
+              verticalAlign: 'middle',
+              position: 'relative',
+              top: -0.5,            // 👈 visually centers icon to text baseline
+            }}
+          />
+          David Casey
+        </Link>
+      </Box>
     </WinterizeSettingsContext.Provider>
   );
 }
