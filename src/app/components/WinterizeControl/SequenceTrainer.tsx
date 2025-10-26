@@ -8,6 +8,8 @@ import {
   TableRow,
   TableCell,
   Typography,
+  useMediaQuery,
+  useTheme,
 } from '@mui/material';
 import { ChevronRight } from '@mui/icons-material';
 import { useSequenceTrainer } from 'app/hooks/useSequenceTrainer';
@@ -28,31 +30,41 @@ export const SequenceTrainer = ({ onClose }: { onClose: () => void }): JSX.Eleme
     error,
   } = useSequenceTrainer();
 
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
+
   if (error) {
-    return <p>{error}</p>;  // Display the error message if there are no zones
+    return <p>{error}</p>;
   }
 
   function handleCompleteTraining() {
-    completeTraining?.();  // Safely invoke the function if it is defined
+    completeTraining?.();
     onClose();
   }
 
   function renderInstructions() {
     return (
-      <Box mb={4}>
-        <Typography variant="body1" mb={2}>
-          Before we start, ensure your air compressor is ready and all hoses are securely connected. The training and blow out will will start with your first zone and begin immediately once you press "Start."
+      <Box mb={isMobile ? 2 : 4}>
+        <Typography variant="body2" mb={2}>
+          Before we start, ensure your air compressor is ready and all hoses are securely connected. 
+          The training will start with your first zone immediately once you press "Start."
         </Typography>
-        <ul>
-          <li>Press "Next" to move on to the next step or zone.</li>
-          <li>Press "Skip" to skip one or more zones while the current zone is in progress.</li>
-          <li>Press "Complete" to finish the training.</li>
-        </ul>
-        <Typography variant="body1" mt={2}>
-          Upon completion, fine-tune any learned values in the table as needed. Edits are saved instantly.
+        <Box component="ul" sx={{ pl: 3, mb: 2 }}>
+          <li>
+            <Typography variant="body2">Press "Next" to move on to the next step or zone.</Typography>
+          </li>
+          <li>
+            <Typography variant="body2">Press "Skip" to skip one or more zones.</Typography>
+          </li>
+          <li>
+            <Typography variant="body2">Press "Complete" to finish training.</Typography>
+          </li>
+        </Box>
+        <Typography variant="body2">
+          Upon completion, fine-tune any learned values in the table as needed.
         </Typography>
       </Box>
-    )
+    );
   }
 
   function renderCurrentStep() {
@@ -60,10 +72,21 @@ export const SequenceTrainer = ({ onClose }: { onClose: () => void }): JSX.Eleme
 
     return (
       <>
-        <Typography variant="subtitle1" fontWeight="bold" align="left">Current zone</Typography>
-        <Box textAlign="center" mb={4} p={2} border={1} borderColor="grey.300" borderRadius={2}>
-          <Typography variant="h4" fontWeight="bold" mb={2}>{currentZone.name}</Typography>
-          <Table sx={{ width: '66%' }} align="center">
+        <Typography variant="subtitle2" fontWeight="bold" align="left" mb={1}>
+          Current zone
+        </Typography>
+        <Box 
+          textAlign="center" 
+          mb={isMobile ? 2 : 4} 
+          p={isMobile ? 1.5 : 2} 
+          border={1} 
+          borderColor="grey.300" 
+          borderRadius={2}
+        >
+          <Typography variant={isMobile ? "h5" : "h4"} fontWeight="bold" mb={2}>
+            {currentZone.name}
+          </Typography>
+          <Table sx={{ width: isMobile ? '100%' : '66%', margin: '0 auto' }}>
             <TableHead>
               <TableRow>
                 <TableCell
@@ -71,37 +94,39 @@ export const SequenceTrainer = ({ onClose }: { onClose: () => void }): JSX.Eleme
                   size='small'
                   sx={{
                     backgroundColor: !isRecovering ? 'grey.700' : 'transparent',
-                    color: !isRecovering ? 'white' : 'inherit'
+                    color: !isRecovering ? 'white' : 'inherit',
+                    py: 1,
                   }}
                 >
-                  Blow out
+                  <Typography variant="body2">Blowout</Typography>
                 </TableCell>
                 <TableCell
                   align="center"
                   size='small'
                   sx={{
                     backgroundColor: isRecovering ? 'grey.700' : 'transparent',
-                    color: isRecovering ? 'white' : 'inherit'
+                    color: isRecovering ? 'white' : 'inherit',
+                    py: 1,
                   }}
                 >
-                  Recovery
+                  <Typography variant="body2">Recovery</Typography>
                 </TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
               <TableRow>
-                <TableCell align="center">
+                <TableCell align="center" sx={{ py: 2 }}>
                   <Typography
-                    variant="h5"
+                    variant={isMobile ? "h4" : "h5"}
                     fontWeight="bold"
                     color={!isRecovering ? 'text.primary' : 'text.secondary'}
                   >
                     {blowOutTime}
                   </Typography>
                 </TableCell>
-                <TableCell align="center">
+                <TableCell align="center" sx={{ py: 2 }}>
                   <Typography
-                    variant="h5"
+                    variant={isMobile ? "h4" : "h5"}
                     fontWeight="bold"
                     color={isRecovering ? 'text.primary' : 'text.secondary'}
                   >
@@ -111,12 +136,13 @@ export const SequenceTrainer = ({ onClose }: { onClose: () => void }): JSX.Eleme
               </TableRow>
             </TableBody>
           </Table>
-          <Box mt={3}>
+          <Box mt={2}>
             <Button
               variant="contained"
               color="primary"
-              sx={{ width: '66%' }}
-              size='large'
+              fullWidth={isMobile}
+              sx={{ width: isMobile ? '100%' : '66%' }}
+              size={isMobile ? 'large' : 'large'}
               onClick={handleNext}
             >
               Next
@@ -133,13 +159,22 @@ export const SequenceTrainer = ({ onClose }: { onClose: () => void }): JSX.Eleme
     if (noMoreZones) {
       return (
         <>
-          <Typography variant="subtitle1" fontWeight="bold" align="left">Up next</Typography>
-          <Box textAlign="center" mb={4} p={2} border={1} borderColor="grey.300" borderRadius={2}>
+          <Typography variant="subtitle2" fontWeight="bold" align="left" mb={1}>
+            Up next
+          </Typography>
+          <Box 
+            textAlign="center" 
+            mb={isMobile ? 2 : 4} 
+            p={isMobile ? 1.5 : 2} 
+            border={1} 
+            borderColor="grey.300" 
+            borderRadius={2}
+          >
             <Typography
-              variant="body1"
+              variant="body2"
               textAlign="center"
               color="text.secondary"
-              sx={{ py: 2 }}
+              sx={{ py: 1 }}
             >
               No more zones to skip. Press Next or Complete to finish training.
             </Typography>
@@ -152,33 +187,41 @@ export const SequenceTrainer = ({ onClose }: { onClose: () => void }): JSX.Eleme
 
     return (
       <>
-        <Typography variant="subtitle1" fontWeight="bold" align="left">Up next</Typography>
-        <Box textAlign="center" mb={4} p={2} border={1} borderColor="grey.300" borderRadius={2}>
+        <Typography variant="subtitle2" fontWeight="bold" align="left" mb={1}>
+          Up next
+        </Typography>
+        <Box 
+          textAlign="center" 
+          mb={isMobile ? 2 : 4} 
+          p={isMobile ? 1.5 : 2} 
+          border={1} 
+          borderColor="grey.300" 
+          borderRadius={2}
+        >
           <Box display="flex" justifyContent="center" alignItems="center">
-            {/* Centered Zone Name */}
             <Typography
-              variant="h6"
+              variant={isMobile ? "body1" : "h6"}
               fontWeight="bold"
               textAlign="center"
               flexGrow={1}
-              sx={{ ml: 9 }} // adjust this to balance arrow button width
+              sx={{ ml: isMobile ? 4 : 9 }}
             >
               {nextZone.name}
             </Typography>
 
-            {/* Skip Button with Arrow */}
             <Button
               onClick={handleSkip}
               variant="text"
+              size={isMobile ? "small" : "medium"}
               sx={{
                 display: 'flex',
                 flexDirection: 'column',
                 alignItems: 'center',
                 minWidth: 'auto',
-                ml: 2,
+                ml: 1,
               }}
             >
-              <ChevronRight fontSize="large" />
+              <ChevronRight fontSize={isMobile ? "medium" : "large"} />
               <Typography variant="caption" color="text.secondary">
                 Skip
               </Typography>
@@ -190,7 +233,7 @@ export const SequenceTrainer = ({ onClose }: { onClose: () => void }): JSX.Eleme
   }
 
   return (
-    <Box sx={{ p: 4, maxWidth: 600, margin: '0 auto' }}>
+    <Box sx={{ p: isMobile ? 2 : 4, maxWidth: 600, margin: '0 auto' }}>
       {!isTraining ? (
         <>
           {renderInstructions()}
@@ -199,6 +242,8 @@ export const SequenceTrainer = ({ onClose }: { onClose: () => void }): JSX.Eleme
               variant="contained"
               color="primary"
               onClick={startTraining}
+              fullWidth={isMobile}
+              size={isMobile ? 'large' : 'medium'}
             >
               Start
             </Button>
@@ -208,11 +253,12 @@ export const SequenceTrainer = ({ onClose }: { onClose: () => void }): JSX.Eleme
         <>
           {renderCurrentStep()}
           {renderOnDeck()}
-          <Box mt={8} display="flex" justifyContent="center">
+          <Box mt={isMobile ? 4 : 8} display="flex" justifyContent="center">
             <Button
               variant="contained"
               color="primary"
-              sx={{ width: '66%' }}
+              fullWidth={isMobile}
+              sx={{ width: isMobile ? '100%' : '66%' }}
               size='large'
               onClick={handleCompleteTraining}
             >

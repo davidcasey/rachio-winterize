@@ -9,6 +9,9 @@ import {
   TableFooter,
   TableRow,
   TableCell,
+  Typography,
+  useMediaQuery,
+  useTheme,
 } from '@mui/material';
 
 import { Zone } from 'app/models/rachioModels';
@@ -38,6 +41,8 @@ export const WinterizeTable = (): JSX.Element => {
   const addCycle = useAddCycle();
   const duplicateCycle = useAddDuplicateCycle();
   const deleteCycle = useDeleteCycle();
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
 
   const {
     isBlowoutRunning,
@@ -76,20 +81,24 @@ export const WinterizeTable = (): JSX.Element => {
                   }}
                 >
                   <TableCell />
-                  <TableCell colSpan={100} className="py-2 px-4">
-                    <strong>Blow out cycle {cycleCount}</strong>
-                    <Button
-                      onClick={() => duplicateCycle(step.cycleId)}
-                      sx={{ marginLeft: 3 }}
-                    >
-                      Duplicate cycle
-                    </Button>
-                    <Button
-                      onClick={() => deleteCycle(step.cycleId)}
-                      sx={{float: 'right'}}
-                    >
-                      Delete cycle
-                    </Button>
+                  <TableCell colSpan={100} sx={{ py: 1, px: isMobile ? 1 : 2 }}>
+                    <Box display="flex" justifyContent="space-between" alignItems="center" flexWrap="wrap" gap={1}>
+                      <strong>Cycle {cycleCount}</strong>
+                      <Box display="flex" gap={1}>
+                        <Button
+                          onClick={() => duplicateCycle(step.cycleId)}
+                          size={isMobile ? 'small' : 'medium'}
+                        >
+                          Duplicate
+                        </Button>
+                        <Button
+                          onClick={() => deleteCycle(step.cycleId)}
+                          size={isMobile ? 'small' : 'medium'}
+                        >
+                          Delete
+                        </Button>
+                      </Box>
+                    </Box>
                   </TableCell>
                 </TableRow>
               )}
@@ -128,14 +137,15 @@ export const WinterizeTable = (): JSX.Element => {
               );
             }}
             sx={{ float: 'right' }}
+            size={isMobile ? 'small' : 'medium'}
           >
-            Add new cycle
+            Add cycle
           </Button>
         </TableCell>
-        <TableCell align='center'>
+        <TableCell align='center' sx={{ px: isMobile ? 0.5 : 2 }}>
           <BlowOutTime />
         </TableCell>
-        <TableCell align='center'>
+        <TableCell align='center' sx={{ px: isMobile ? 0.5 : 2 }}>
           <RecoveryTime />
         </TableCell>
       </TableRow>
@@ -147,73 +157,90 @@ export const WinterizeTable = (): JSX.Element => {
    */
   if (!selectedDevice || !zones) return <></>;
   return (
-    <>
-      <h2>Device: {selectedDevice.name}</h2>
-      <Table
-        size='small'
-        sx={{
-          border: '1px solid #ddd',
-          borderRadius: '3px',
-          mb: 5,
-        }}
-      >
-        <TableHead>
-          <TableRow>
-            <TableCell colSpan={3} />
-            <TableCell colSpan={2} align='center'>Time (seconds)</TableCell>
-          </TableRow>
-          <TableRow>
-            <TableCell sx={{width: '5%'}}>{/* isActive */}</TableCell>
-            <TableCell sx={{width: '5%'}}>Enabled</TableCell>
-            <TableCell sx={{width: '50%'}}>Zone name</TableCell>
-            <TableCell sx={{width: '20%'}} align='center'>Blow out</TableCell>
-            <TableCell sx={{width: '20%'}} align='center'>Recovery</TableCell>
-          </TableRow>
-        </TableHead>
-        <TableBody>
-          {renderWinterizeRows()}
-        </TableBody>
-        <TableFooter>
-          {renderAddCycleRow(zones)}
-          <TableRow>
-            <TableCell colSpan={100}>
-              {winterizeSequence.length === 0 ? (
-                <p style={{ textAlign: 'center' }}>Add at least one cycle to begin blowout</p>
-              ) : (
-                <Box
-                  display="flex"
-                  justifyContent="space-between"
-                  alignItems="center"
-                >
-                  <Button
-                    onClick={resetWinterizeSequence}
-                    disabled={isBlowoutRunning || winterizeSequence.length === 0}
+    <Box sx={{ maxWidth: 1200, mx: 'auto', width: '100%' }}>
+      <Typography variant="h6" sx={{ mb: 2 }}>Device: {selectedDevice.name}</Typography>
+      <Box sx={{ overflowX: 'auto' }}>
+        <Table
+          size='small'
+          sx={{
+            border: '1px solid #ddd',
+            borderRadius: '3px',
+            mb: 5,
+            minWidth: isMobile ? 320 : 'auto',
+            width: '100%',
+          }}
+        >
+          <TableHead>
+            <TableRow>
+              <TableCell colSpan={3} sx={{ px: isMobile ? 0.5 : 2 }} />
+              <TableCell colSpan={2} align='center' sx={{ px: isMobile ? 0.5 : 2 }}>
+                Time (seconds)
+              </TableCell>
+            </TableRow>
+            <TableRow>
+              <TableCell sx={{ width: '5%', px: isMobile ? 0.5 : 2 }}>{/* isActive */}</TableCell>
+              <TableCell sx={{ width: '5%', px: isMobile ? 0.5 : 2 }} align='center'>
+                ✓
+              </TableCell>
+              <TableCell sx={{ width: '50%', px: isMobile ? 1 : 2 }}>Zone</TableCell>
+              <TableCell sx={{ width: '20%', px: isMobile ? 0.5 : 2 }} align='center'>
+                Run
+              </TableCell>
+              <TableCell sx={{ width: '20%', px: isMobile ? 0.5 : 2 }} align='center'>
+                Rest
+              </TableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {renderWinterizeRows()}
+          </TableBody>
+          <TableFooter>
+            {renderAddCycleRow(zones)}
+            <TableRow>
+              <TableCell colSpan={100} sx={{ px: isMobile ? 1 : 2 }}>
+                {winterizeSequence.length === 0 ? (
+                  <p style={{ textAlign: 'center' }}>Add at least one cycle to begin blowout</p>
+                ) : (
+                  <Box
+                    display="flex"
+                    justifyContent="space-between"
+                    alignItems="center"
+                    flexWrap="wrap"
+                    gap={2}
                   >
-                    Reset table
-                  </Button>
-                  <Box display="flex" gap={2}>
                     <Button
-                      variant="contained"
-                      onClick={stopBlowout}
-                      disabled={!isBlowoutRunning}
-                    >
-                      Cancel
-                    </Button>
-                    <Button
-                      variant="contained"
-                      color="primary"
-                      onClick={startBlowout}
+                      onClick={resetWinterizeSequence}
                       disabled={isBlowoutRunning || winterizeSequence.length === 0}
+                      size={isMobile ? 'small' : 'medium'}
                     >
-                      Start blowout
+                      Reset
                     </Button>
+                    <Box display="flex" gap={1}>
+                      <Button
+                        variant="contained"
+                        onClick={stopBlowout}
+                        disabled={!isBlowoutRunning}
+                        size={isMobile ? 'small' : 'medium'}
+                      >
+                        Cancel
+                      </Button>
+                      <Button
+                        variant="contained"
+                        color="primary"
+                        onClick={startBlowout}
+                        disabled={isBlowoutRunning || winterizeSequence.length === 0}
+                        size={isMobile ? 'small' : 'medium'}
+                      >
+                        Start
+                      </Button>
+                    </Box>
                   </Box>
-                </Box>
-              )}
-            </TableCell>
-          </TableRow>
-        </TableFooter>
-      </Table>
-    </>
+                )}
+              </TableCell>
+            </TableRow>
+          </TableFooter>
+        </Table>
+      </Box>
+    </Box>
   );
 }

@@ -1,20 +1,27 @@
 import { JSX, useState } from 'react';
-import { Button, Snackbar, Alert, Tooltip } from '@mui/material';
-import { Share as ShareIcon } from '@mui/icons-material';
+import { Button, Tooltip, Dialog, DialogTitle, DialogContent, DialogActions, Typography } from '@mui/material';
+import { Bookmark as BookmarkIcon } from '@mui/icons-material';
 import { useUrlState } from 'app/hooks/useUrlState';
 
 export const ExportButton = (): JSX.Element => {
-  const { canExport, copyUrlToClipboard } = useUrlState();
-  const [showSuccess, setShowSuccess] = useState(false);
-  const [showError, setShowError] = useState(false);
+  const { canExport, generateUrl } = useUrlState();
+  const [showDialog, setShowDialog] = useState(false);
 
-  const handleExport = async () => {
-    const success = await copyUrlToClipboard();
-    if (success) {
-      setShowSuccess(true);
-    } else {
-      setShowError(true);
-    }
+  const handleExport = () => {
+    const url = generateUrl();
+    if (!url) return;
+
+    // Update the browser URL to include the hash
+    window.history.pushState(null, '', url);
+    
+    // Show the instructions dialog
+    setShowDialog(true);
+  };
+
+  const handleClose = () => {
+    setShowDialog(false);
+    // Optionally clean up the URL after they close
+    // window.history.pushState(null, '', window.location.pathname);
   };
 
   if (!canExport) {
@@ -23,11 +30,10 @@ export const ExportButton = (): JSX.Element => {
         <span>
           <Button
             variant="outlined"
-            startIcon={<ShareIcon />}
-            sx={{ float: 'right' }}
+            startIcon={<BookmarkIcon />}
             disabled
           >
-            Export Bookmark
+            Save Bookmark
           </Button>
         </span>
       </Tooltip>
@@ -38,34 +44,47 @@ export const ExportButton = (): JSX.Element => {
     <>
       <Button
         variant="outlined"
-        startIcon={<ShareIcon />}
+        startIcon={<BookmarkIcon />}
         onClick={handleExport}
         sx={{ float: 'right' }}
       >
-        Export Bookmark
+        Save Bookmark
       </Button>
 
-      <Snackbar
-        open={showSuccess}
-        autoHideDuration={4000}
-        onClose={() => setShowSuccess(false)}
-        anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+      <Dialog
+        open={showDialog}
+        onClose={handleClose}
+        maxWidth="sm"
+        fullWidth
       >
-        <Alert severity="success" onClose={() => setShowSuccess(false)}>
-          Bookmark URL copied to clipboard! Save it to return next year.
-        </Alert>
-      </Snackbar>
+        <DialogTitle>Save Your Configuration</DialogTitle>
+        <DialogContent>
+          <Typography variant="body1" paragraph>
+            Your winterize sequence and API token have been saved to the current page URL.
+          </Typography>
+          
+          <Typography variant="body1">
+            Please bookmark this page.
+          </Typography>
+          <ul>
+            <li><Typography variant="body1"><strong>Ctrl+D</strong> (Windows/Linux)</Typography></li>
+            <li><Typography variant="body1"><strong>Cmd+D</strong> (Mac)</Typography></li>
+          </ul>
 
-      <Snackbar
-        open={showError}
-        autoHideDuration={4000}
-        onClose={() => setShowError(false)}
-        anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
-      >
-        <Alert severity="error" onClose={() => setShowError(false)}>
-          Failed to copy URL to clipboard
-        </Alert>
-      </Snackbar>
+          <Typography variant="body1" paragraph>
+            Next year, open this bookmark to instantly restore your winterize sequence with all your custom timings.
+          </Typography>
+
+          <Typography variant="body1">
+            ⚠️ <strong>Security Note:</strong> This bookmark contains your Rachio API token. Keep it private and don't share it.
+          </Typography>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleClose} variant="contained">
+            Done
+          </Button>
+        </DialogActions>
+      </Dialog>
     </>
   );
 };

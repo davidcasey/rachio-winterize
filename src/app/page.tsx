@@ -9,8 +9,12 @@ import {
   Collapse,
   Container,
   CircularProgress,
-  Alert
+  Alert,
+  IconButton,
+  useMediaQuery,
+  useTheme
 } from '@mui/material';
+import { InfoOutlined } from '@mui/icons-material';
 
 import { DEFAULT_BLOW_OUT_TIME, DEFAULT_RECOVERY_TIME } from 'app/constants/winterizeDefaults';
 import { useIsAuth } from 'app/hooks/useAuth';
@@ -22,29 +26,38 @@ export default function Home() {
   const isAuthenticated = useIsAuth();
   const { isLoadingFromUrl, urlLoadError } = useUrlState();
   const [activePanel, setActivePanel] = useState<null | 'welcome' | 'instructions'>('welcome');
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
 
   const togglePanel = useCallback((panel: typeof activePanel) => {
     setActivePanel(prev => (prev === panel ? null : panel));
   }, []);
 
+  // Auto-close welcome panel when authenticated, but allow manual override
   useEffect(() => {
-    if (isAuthenticated) {
-      togglePanel(activePanel);
+    if (isAuthenticated && activePanel === 'welcome') {
+      setActivePanel(null);
     }
-  }, [isAuthenticated, activePanel, togglePanel]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isAuthenticated]);
 
   return (
     <Box>
       <AppBar position="static" color="default" elevation={1}>
         <Toolbar sx={{ justifyContent: 'space-between' }}>
           <Box>
-            <Button onClick={() => togglePanel('welcome')}>Welcome</Button>
-            {/* <Button onClick={() => togglePanel('instructions')}>Instructions</Button> */}
+            {isMobile ? (
+              <IconButton onClick={() => togglePanel('welcome')} color="primary">
+                <InfoOutlined />
+              </IconButton>
+            ) : (
+              <Button onClick={() => togglePanel('welcome')}>Welcome</Button>
+            )}
           </Box>
           <Typography variant="h6" align="center" sx={{ flex: 1 }}>
             Rachio Winterize
           </Typography>
-          <Box sx={{ width: 120 }} /> {/* spacer to keep logo centered */}
+          <Box sx={{ width: isMobile ? 48 : 120 }} /> {/* spacer to keep logo centered */}
         </Toolbar>
       </AppBar>
 
@@ -65,13 +78,6 @@ export default function Home() {
         </Container>
       </Collapse>
 
-      {/* <Collapse in={activePanel === 'instructions'}>
-        <Container sx={{ py: 2 }}>
-          <Typography variant="h6">Instructions</Typography>
-          <Typography>Step-by-step guide goes here.</Typography>
-        </Container>
-      </Collapse> */}
-
       <Container sx={{ mt: 4 }}>
         {isLoadingFromUrl ? (
           <Box display="flex" flexDirection="column" alignItems="center" gap={2} py={4}>
@@ -91,8 +97,6 @@ export default function Home() {
           <WinterizeControl />
         )}
       </Container>
-      <br /><br />
-      <br /><br />
     </Box>
   );
 }

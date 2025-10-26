@@ -4,8 +4,13 @@ import {
   DialogActions,
   DialogContent,
   DialogTitle,
-  Button
+  Button,
+  useMediaQuery,
+  useTheme,
+  Box,
+  IconButton,
 } from '@mui/material';
+import { Close as CloseIcon } from '@mui/icons-material';
 
 import { Device } from 'app/models/rachioModels';
 import { WinterizeSettings } from 'app/models/winterizeModels';
@@ -27,12 +32,14 @@ export const WinterizeControl = (): JSX.Element => {
   const devices = useDevices();
   const selectedDevice = useSelectedDevice();
   const { setSelectedDevice } = useWinterizeActions();
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
 
   const setDevice = useCallback((device: Device) => {
     setSelectedDevice(device);
   }, [setSelectedDevice]);
 
-  // Calling setDevice(devices[0]) directly during render is a bad idea in React — it can cause a 
+  // Calling setDevice(devices[0]) directly during render is a bad idea in React – it can cause a 
   // render loop because state is updating during rendering. useEffect to be safe.
   useEffect(() => {
     if (devices?.length === 1) {
@@ -40,44 +47,88 @@ export const WinterizeControl = (): JSX.Element => {
     }
   }, [devices, setDevice]);
 
+  const handleCloseTrainer = () => {
+    setShowSequenceTrainer(false);
+  };
+
   return (
     <WinterizeSettingsContext.Provider value={{winterizeSettings, setWinterizeSettings}}>
       {devices && devices.length > 1 && (
         <DeviceSelector devices={devices} onChange={setDevice} />
       )}
-      { !showSequenceTrainer ? (
+      {!showSequenceTrainer && (
         <Button
           variant="contained"
           color="primary"
           type="button"
-          sx={{ float: 'right' }}
-          onClick={() => setShowSequenceTrainer(!showSequenceTrainer)}
+          sx={{ float: 'right', mb: 2 }}
+          onClick={() => setShowSequenceTrainer(true)}
+          size={isMobile ? 'small' : 'medium'}
         >
           Training mode
         </Button>
-      ) : (<></>)}
+      )}
       
-      <Dialog
-        open={showSequenceTrainer}
-        onClose={() => {
-          setShowSequenceTrainer(false)
-        }} // Close modal when clicked outside
-        maxWidth="sm"  // Control the max width of the modal
-        fullWidth  // Take up full width
-      >
-        <DialogTitle>Blow out sequence trainer</DialogTitle>
-        <DialogContent>
-          {/* Your SequenceTrainer Component */}
-          <SequenceTrainer onClose={() => setShowSequenceTrainer(false)} />
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={() => setShowSequenceTrainer(false)} color="primary">
-            Quit
-          </Button>
-        </DialogActions>
-      </Dialog>
+      {isMobile ? (
+        // Full-screen overlay for mobile
+        <Dialog
+          open={showSequenceTrainer}
+          onClose={handleCloseTrainer}
+          fullScreen
+          sx={{
+            '& .MuiDialog-paper': {
+              margin: 0,
+              maxHeight: '100%',
+              borderRadius: 0,
+            }
+          }}
+        >
+          <Box
+            sx={{
+              position: 'sticky',
+              top: 0,
+              zIndex: 1,
+              backgroundColor: 'background.paper',
+              borderBottom: '1px solid',
+              borderColor: 'divider',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              px: 2,
+              py: 1.5,
+            }}
+          >
+            <Box sx={{ fontSize: '1.125rem', fontWeight: 600 }}>
+              Training Mode
+            </Box>
+            <IconButton onClick={handleCloseTrainer} edge="end">
+              <CloseIcon />
+            </IconButton>
+          </Box>
+          <Box sx={{ overflowY: 'auto', flex: 1 }}>
+            <SequenceTrainer onClose={handleCloseTrainer} />
+          </Box>
+        </Dialog>
+      ) : (
+        // Regular dialog for desktop
+        <Dialog
+          open={showSequenceTrainer}
+          onClose={handleCloseTrainer}
+          maxWidth="sm"
+          fullWidth
+        >
+          <DialogTitle>Blowout sequence trainer</DialogTitle>
+          <DialogContent>
+            <SequenceTrainer onClose={handleCloseTrainer} />
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={handleCloseTrainer} color="primary">
+              Quit
+            </Button>
+          </DialogActions>
+        </Dialog>
+      )}
 
-      {/* {showSequenceTrainer && <SequenceTrainer onClose={() => setShowSequenceTrainer(false)}/>} */}
       {selectedDevice && <WinterizeTable />}
       <ExportButton />
     </WinterizeSettingsContext.Provider>
