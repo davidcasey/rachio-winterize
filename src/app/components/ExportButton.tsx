@@ -1,5 +1,5 @@
 import { JSX, useState } from 'react';
-import { Button, Tooltip, Dialog, DialogTitle, DialogContent, DialogActions, Typography } from '@mui/material';
+import { Button, Box, Dialog, DialogTitle, DialogContent, DialogActions, Typography } from '@mui/material';
 import { Bookmark as BookmarkIcon } from '@mui/icons-material';
 import { useUrlState } from 'app/hooks/useUrlState';
 
@@ -24,32 +24,23 @@ export const ExportButton = (): JSX.Element => {
     // window.history.pushState(null, '', window.location.pathname);
   };
 
-  if (!canExport) {
-    return (
-      <Tooltip title="Complete training and create a winterize sequence to export">
-        <span>
-          <Button
-            variant="outlined"
-            startIcon={<BookmarkIcon />}
-            disabled
-          >
-            Save Bookmark
-          </Button>
-        </span>
-      </Tooltip>
-    );
-  }
-
   return (
     <>
-      <Button
-        variant="outlined"
-        startIcon={<BookmarkIcon />}
-        onClick={handleExport}
-        sx={{ float: 'right' }}
-      >
-        Save Bookmark
-      </Button>
+      <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end' }}>
+        <Button
+          variant="outlined"
+          startIcon={<BookmarkIcon />}
+          onClick={handleExport}
+          disabled={!canExport}
+        >
+          Save Bookmark
+        </Button>
+        {!canExport && (
+          <Typography variant="caption" textAlign="right" sx={{ mt: 0.5, fontStyle: 'italic' }}>
+            Complete training and create a winterize sequence to export
+          </Typography>
+        )}
+      </Box>
 
       <Dialog
         open={showDialog}
