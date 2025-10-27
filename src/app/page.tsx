@@ -76,6 +76,12 @@ export default function Home() {
             <li>Default time to blow out each zone: {DEFAULT_BLOW_OUT_TIME} seconds</li>
             <li>Default time for air compressor recovery: {DEFAULT_RECOVERY_TIME} seconds</li>
           </ul>
+          <p>
+            This is unsupported software. If something doesn’t work, I may or may not fix it. No warranties or guarantees of safety are made.
+          </p>
+          <p>
+            Enjoy.
+          </p>
         <Typography></Typography>
         </Container>
       </Collapse>
