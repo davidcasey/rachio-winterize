@@ -67,7 +67,7 @@ export default function Home() {
         <Container sx={{ py: 2 }}>
           <Typography variant="h6">Welcome</Typography>
           <p>
-            Use this app to help you winterize your Rachio sprinkler system by blowing out each zone with air. 
+            Use this app to help you winterize your Rachio sprinkler system by blowing out each zone with an air compressor. 
             It is important to follow the recommendations below to prevent damage to your system.
           </p>
           <ul>
