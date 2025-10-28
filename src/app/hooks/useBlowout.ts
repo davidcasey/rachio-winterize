@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useCallback } from 'react';
 import { useStartZoneWatering, useStopWatering } from 'app/services/rachio-services';
 import {
   useSelectedDevice,
@@ -6,111 +6,268 @@ import {
   useIsBlowoutRunning,
   useActiveStep,
   useWinterizeActions,
+  useCurrentStepIndex,
+  useCurrentPhase,
+  usePhaseStartTime,
 } from 'app/store/winterizeStore';
 
 /**
  * useBlowout
- * This hook manages the sequencing of blowout steps with delay between each.
+ * This hook manages the sequencing of blowout steps using timestamp-based tracking
+ * to ensure accurate timing even when the app is backgrounded.
  */
 export const useBlowout = () => {
-  // winterizeStore
   const selectedDevice = useSelectedDevice();
   const winterizeSequence = useWinterizeSequence();
   const isRunning = useIsBlowoutRunning();
   const activeStep = useActiveStep();
-  const { setActiveStep } = useWinterizeActions();
-  // rachio service hooks
+  const currentStepIndex = useCurrentStepIndex();
+  const currentPhase = useCurrentPhase();
+  const phaseStartTime = usePhaseStartTime();
+
+  const {
+    setActiveStep,
+    setCurrentStepIndex,
+    setCurrentPhase,
+    setPhaseStartTime,
+    setSequenceStartTime,
+    resetTimingState,
+  } = useWinterizeActions();
+
   const startZoneWatering = useStartZoneWatering();
   const stopWatering = useStopWatering();
 
-  const stepIndexRef = useRef<number>(0);
   const timerRef = useRef<NodeJS.Timeout | null>(null);
+  const isProcessingRef = useRef(false);
 
   /**
-   * Run Next Step
+   * Clear any active timer
    */
-  const runNextStep = async () => {
-    if (!selectedDevice) return;
-  
-    // Find the next selected step starting from current index
-    let step = winterizeSequence[stepIndexRef.current];
-    while (step && !step.selected) {
-      stepIndexRef.current += 1;
-      step = winterizeSequence[stepIndexRef.current];
-    }
-
-    if (!step) {
-      stopBlowout(); // Ensure blowout is stopped if there are no more steps
-      return;
-    }
-    
-    setActiveStep(step);
-    // Start zone watering
-    try {
-      await startZoneWatering.mutateAsync({ zoneId: step.zone.id, duration: step.blowOutTime });
-    } catch (err) {
-      console.error('Failed to start zone:', err);
-      stopBlowout(); // Fail-safe
-      return;
-    }
-    // Immediately after starting watering, stop watering after the duration ends
-    timerRef.current = setTimeout(async () => {
-      // Stop watering once the blowOutTime has passed
-      await stopWatering.mutateAsync(selectedDevice.id);
-      // Wait for the recovery time (recharge) before starting the next step
-      timerRef.current = setTimeout(() => {
-        stepIndexRef.current += 1;
-        setActiveStep(null);
-        runNextStep();
-      }, step.recoveryTime * 1000);
-    }, step.blowOutTime * 1000);
-  };
-
-  /**
-   * Start Blowout
-   */
-  const startBlowout = () => {
-    if (isRunning || winterizeSequence.length === 0) return;
-    stepIndexRef.current = 0;
-    runNextStep();
-  };
-  
-  /**
-   * Stop Blowout
-   */
-  const stopBlowout = async () => {
-    if (!selectedDevice) return;
-    // Clear the active timeout if any exists
+  const clearTimer = useCallback(() => {
     if (timerRef.current) {
       clearTimeout(timerRef.current);
+      timerRef.current = null;
     }
-    timerRef.current = null;
-    // Immediately stop watering (to ensure any active zone watering is halted)
-    if (activeStep) {
-      await stopWatering.mutateAsync(selectedDevice.id);
-    }
-    // Reset active step and any other states related to the flow
-    setActiveStep(null);
-    stepIndexRef.current = 0;
-  };
+  }, []);
 
   /**
-   * If a component using useBlowout gets unmounted while a blowout sequence is running or
-   * scheduled, this clears any setTimeout that would otherwise fire after the component is gone.
+   * Find the next selected step starting from the given index
+   */
+  const findNextSelectedStep = useCallback(
+    (startIndex: number) => {
+      for (let i = startIndex; i < winterizeSequence.length; i++) {
+        if (winterizeSequence[i].selected) {
+          return { step: winterizeSequence[i], index: i };
+        }
+      }
+      return null;
+    },
+    [winterizeSequence]
+  );
+
+  /**
+   * Stop the blowout sequence
+   */
+  const stopBlowout = useCallback(async () => {
+    if (!selectedDevice) return;
+
+    clearTimer();
+    isProcessingRef.current = false;
+
+    // Stop any active watering
+    if (activeStep) {
+      try {
+        await stopWatering.mutateAsync(selectedDevice.id);
+      } catch (err) {
+        console.error('Failed to stop watering:', err);
+      }
+    }
+
+    // Reset all timing state
+    resetTimingState();
+  }, [selectedDevice, activeStep, stopWatering, resetTimingState, clearTimer]);
+
+  /**
+   * Start the blowout phase for a step
+   */
+  const startBlowoutPhase = useCallback(
+    async (step: typeof winterizeSequence[0], index: number) => {
+      if (!selectedDevice || isProcessingRef.current) return;
+
+      isProcessingRef.current = true;
+      setCurrentStepIndex(index);
+      setActiveStep(step);
+      setCurrentPhase('blowout');
+      setPhaseStartTime(Date.now());
+
+      try {
+        await startZoneWatering.mutateAsync({
+          zoneId: step.zone.id,
+          duration: step.blowOutTime,
+        });
+      } catch (err) {
+        console.error('Failed to start zone:', err);
+        await stopBlowout();
+        return;
+      }
+
+      isProcessingRef.current = false;
+    },
+    [
+      selectedDevice,
+      startZoneWatering,
+      setCurrentStepIndex,
+      setActiveStep,
+      setCurrentPhase,
+      setPhaseStartTime,
+      stopBlowout,
+    ]
+  );
+
+  /**
+   * Start the recovery phase for a step
+   */
+  const startRecoveryPhase = useCallback(
+    async () => {
+      if (!selectedDevice || isProcessingRef.current) return;
+
+      isProcessingRef.current = true;
+      setCurrentPhase('recovery');
+      setPhaseStartTime(Date.now());
+
+      try {
+        await stopWatering.mutateAsync(selectedDevice.id);
+      } catch (err) {
+        console.error('Failed to stop watering:', err);
+      }
+
+      isProcessingRef.current = false;
+    },
+    [selectedDevice, stopWatering, setCurrentPhase, setPhaseStartTime]
+  );
+
+  /**
+   * Move to the next step in the sequence
+   */
+  const moveToNextStep = useCallback(() => {
+    const nextStepData = findNextSelectedStep(currentStepIndex + 1);
+
+    if (!nextStepData) {
+      // No more steps, stop the sequence
+      stopBlowout();
+      return;
+    }
+
+    setActiveStep(null);
+    startBlowoutPhase(nextStepData.step, nextStepData.index);
+  }, [currentStepIndex, findNextSelectedStep, stopBlowout, setActiveStep, startBlowoutPhase]);
+
+  /**
+   * Check and update the current phase based on elapsed time
+   */
+  const checkPhaseProgress = useCallback(() => {
+    if (!phaseStartTime || currentPhase === 'idle' || !activeStep) {
+      return;
+    }
+
+    const elapsed = Date.now() - phaseStartTime;
+
+    if (currentPhase === 'blowout') {
+      const blowoutDuration = activeStep.blowOutTime * 1000;
+      if (elapsed >= blowoutDuration) {
+        // Blowout phase complete, start recovery
+        startRecoveryPhase();
+      } else {
+        // Schedule next check
+        const remaining = blowoutDuration - elapsed;
+        timerRef.current = setTimeout(checkPhaseProgress, Math.min(remaining + 100, 1000));
+      }
+    } else if (currentPhase === 'recovery') {
+      const recoveryDuration = activeStep.recoveryTime * 1000;
+      if (elapsed >= recoveryDuration) {
+        // Recovery phase complete, move to next step
+        moveToNextStep();
+      } else {
+        // Schedule next check
+        const remaining = recoveryDuration - elapsed;
+        timerRef.current = setTimeout(checkPhaseProgress, Math.min(remaining + 100, 1000));
+      }
+    }
+  }, [phaseStartTime, currentPhase, activeStep, startRecoveryPhase, moveToNextStep]);
+
+  /**
+   * Start the blowout sequence
+   */
+  const startBlowout = useCallback(() => {
+    if (isRunning || winterizeSequence.length === 0) return;
+
+    const firstStepData = findNextSelectedStep(0);
+    if (!firstStepData) {
+      console.warn('No selected steps found');
+      return;
+    }
+
+    setSequenceStartTime(Date.now());
+    startBlowoutPhase(firstStepData.step, firstStepData.index);
+  }, [
+    isRunning,
+    winterizeSequence.length,
+    findNextSelectedStep,
+    setSequenceStartTime,
+    startBlowoutPhase,
+  ]);
+
+  /**
+   * Effect to manage phase progression
+   */
+  useEffect(() => {
+    if (currentPhase === 'idle' || !phaseStartTime) {
+      clearTimer();
+      return;
+    }
+
+    // Check immediately
+    checkPhaseProgress();
+
+    return () => {
+      clearTimer();
+    };
+  }, [currentPhase, phaseStartTime, checkPhaseProgress, clearTimer]);
+
+  /**
+   * Effect to handle visibility changes and resume from correct position
+   */
+  useEffect(() => {
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === 'visible' && isRunning) {
+        // When page becomes visible again, trigger a check
+        // The checkPhaseProgress function will calculate elapsed time and act accordingly
+        clearTimer();
+        checkPhaseProgress();
+      }
+    };
+
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+
+    return () => {
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+    };
+  }, [isRunning, checkPhaseProgress, clearTimer]);
+
+  /**
+   * Cleanup on unmount
    */
   useEffect(() => {
     return () => {
-      // Clean up on unmount
-      if (timerRef.current) {
-        clearTimeout(timerRef.current);
-      }
-      timerRef.current = null;
+      clearTimer();
+      isProcessingRef.current = false;
     };
-  }, []);
+  }, [clearTimer]);
 
   return {
     isBlowoutRunning: isRunning,
     activeStep,
+    currentPhase,
     startBlowout,
     stopBlowout,
   };

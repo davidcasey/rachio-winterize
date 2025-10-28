@@ -13,8 +13,13 @@ const initialWinterizeState = {
   devices: null,
   zones: null,
   selectedDevice: null,
-  activeStep: null, 
+  activeStep: null,
   winterizeSequence: [],
+  // Timestamp-based tracking
+  currentStepIndex: -1,
+  currentPhase: 'idle' as 'idle' | 'blowout' | 'recovery',
+  phaseStartTime: null as number | null,
+  sequenceStartTime: null as number | null,
 };
 
 interface WinterizeStoreActions {
@@ -22,94 +27,139 @@ interface WinterizeStoreActions {
   addWinterizeSteps: (steps: WinterizeStep[]) => void;
   removeWinterizeSteps: (steps: WinterizeStep[]) => void;
   updateWinterizeStep: (id: string, updatedStep: Partial<WinterizeStep>) => void;
-  setActiveStep: (activeStep: WinterizeStep | null) => void, 
+  setActiveStep: (activeStep: WinterizeStep | null) => void;
   resetWinterizeSequence: () => void;
+  // New actions for timestamp-based tracking
+  setCurrentStepIndex: (index: number) => void;
+  setCurrentPhase: (phase: 'idle' | 'blowout' | 'recovery') => void;
+  setPhaseStartTime: (time: number | null) => void;
+  setSequenceStartTime: (time: number | null) => void;
+  resetTimingState: () => void;
 }
 
 interface WinterizeStoreState {
   // Store
   loading: boolean;
   error: string | null;
-  hydrated: boolean; // set hydrated to false to rehydrate store
+  hydrated: boolean;
   init: (devices: Device[]) => void;
   // Rachio
   devices: Device[] | null;
   zones: Zone[] | null;
   // Winterize
   selectedDevice: Device | null;
-  activeStep: WinterizeStep | null, 
+  activeStep: WinterizeStep | null;
   winterizeSequence: WinterizeStep[];
+  // Timestamp-based tracking
+  currentStepIndex: number;
+  currentPhase: 'idle' | 'blowout' | 'recovery';
+  phaseStartTime: number | null;
+  sequenceStartTime: number | null;
   actions: WinterizeStoreActions;
-};
+}
 
 const useWinterizeStore = create<WinterizeStoreState>()((set) => ({
-    ...initialWinterizeState,
-    init: (devices) => set({
-      ...initialWinterizeState, // Reset everything, using the initial state
+  ...initialWinterizeState,
+  init: (devices) =>
+    set({
+      ...initialWinterizeState,
       devices,
     }),
-    actions: {
-      setSelectedDevice: (selectedDevice: Device) => set((state) => ({
+  actions: {
+    setSelectedDevice: (selectedDevice: Device) =>
+      set((state) => ({
         ...state,
         selectedDevice,
         zones: selectedDevice.zones,
       })),
-      addWinterizeSteps: (steps: WinterizeStep[]) => set((state) => ({
+    addWinterizeSteps: (steps: WinterizeStep[]) =>
+      set((state) => ({
         ...state,
         winterizeSequence: [...state.winterizeSequence, ...steps],
       })),
-      removeWinterizeSteps: (steps: WinterizeStep[]) => set((state) => ({
+    removeWinterizeSteps: (steps: WinterizeStep[]) =>
+      set((state) => ({
         ...state,
         winterizeSequence: state.winterizeSequence.filter(
           (step) => !steps.some((s) => s.id === step.id)
         ),
       })),
-      updateWinterizeStep: (id, updatedFields) => set((state) => ({
+    updateWinterizeStep: (id, updatedFields) =>
+      set((state) => ({
         ...state,
         winterizeSequence: state.winterizeSequence.map((step) =>
           step.id === id ? { ...step, ...updatedFields } : step
         ),
       })),
-      setActiveStep: (activeStep: WinterizeStep | null) => set((state) => ({
+    setActiveStep: (activeStep: WinterizeStep | null) =>
+      set((state) => ({
         ...state,
-        activeStep
+        activeStep,
       })),
-      resetWinterizeSequence: () => set(() => ({
+    resetWinterizeSequence: () =>
+      set(() => ({
         winterizeSequence: initialWinterizeState.winterizeSequence,
       })),
-    },
-  })
-);
+    // New actions
+    setCurrentStepIndex: (index: number) =>
+      set((state) => ({
+        ...state,
+        currentStepIndex: index,
+      })),
+    setCurrentPhase: (phase: 'idle' | 'blowout' | 'recovery') =>
+      set((state) => ({
+        ...state,
+        currentPhase: phase,
+      })),
+    setPhaseStartTime: (time: number | null) =>
+      set((state) => ({
+        ...state,
+        phaseStartTime: time,
+      })),
+    setSequenceStartTime: (time: number | null) =>
+      set((state) => ({
+        ...state,
+        sequenceStartTime: time,
+      })),
+    resetTimingState: () =>
+      set((state) => ({
+        ...state,
+        currentStepIndex: -1,
+        currentPhase: 'idle',
+        phaseStartTime: null,
+        sequenceStartTime: null,
+        activeStep: null,
+      })),
+  },
+}));
 
 /**
- * useInitializeWinterize is an internal function that initializes the winterize store with data 
- * from the useEntity response. We allow setState to overwrite the state, since this would be a 
- * change in Entity. A new entity would have different devices and zones rendering our existing 
- * store data useless.
+ * useInitializeWinterize is an internal function that initializes the winterize store with data
+ * from the useEntity response.
  */
 const useInitializeWinterize = () => {
   const isAuth = getIsAuth();
 
-  const hydrated = useWinterizeStore(state => state.hydrated);
-  const loading = useWinterizeStore(state => state.loading);
-  
+  const hydrated = useWinterizeStore((state) => state.hydrated);
+  const loading = useWinterizeStore((state) => state.loading);
+
   const shouldFetchData = isAuth && !hydrated && !loading;
   const { data, isLoading: entityIsLoading, error } = useEntity({
-    enabled: shouldFetchData
+    enabled: shouldFetchData,
   });
-  
+
   useEffect(() => {
     if (hydrated || !isAuth) return;
-    
+
     if (loading && !entityIsLoading) {
       useWinterizeStore.setState({ loading: false });
-      return; // Exit early and let the next effect run handle initialization
-    } 
+      return;
+    }
 
     if (entityIsLoading) {
       useWinterizeStore.setState({ loading: true, error: null });
       return;
-    } 
+    }
 
     if (error) {
       useWinterizeStore.setState({ loading: false, error: error.message });
@@ -122,7 +172,11 @@ const useInitializeWinterize = () => {
       useWinterizeStore.setState({ hydrated: true, loading: false, error: null });
     }
     if (data && !data.devices?.length) {
-      useWinterizeStore.setState({ hydrated: true, loading: false, error: "No devices found." });
+      useWinterizeStore.setState({
+        hydrated: true,
+        loading: false,
+        error: 'No devices found.',
+      });
     }
   }, [hydrated, loading, isAuth, entityIsLoading, data, error]);
 
@@ -130,12 +184,9 @@ const useInitializeWinterize = () => {
 };
 
 /**
- * This is the main hook to be used in the app. It will initialize the store if it hasn't been
- * initialized yet. It will also return the state of the store.
- * @param selector the selector functions to be used in the WinterizeStoreState
- * @returns the Zustand useWinerizeStore
+ * Main hook to be used in the app
  */
-const useWinterize = <T>(selector: (state: WinterizeStoreState) => T): T => {
+const useWinterize = <T,>(selector: (state: WinterizeStoreState) => T): T => {
   useInitializeWinterize();
   return useWinterizeStore(selector);
 };
@@ -148,7 +199,14 @@ export const useDevices = () => useWinterize((state) => state.devices);
 export const useZones = () => useWinterize((state) => state.zones);
 export const useSelectedDevice = () => useWinterize((state) => state.selectedDevice);
 export const useActiveStep = () => useWinterize((state) => state.activeStep);
-export const useIsBlowoutRunning = () => useWinterize((state) => !!state.activeStep);
+export const useIsBlowoutRunning = () =>
+  useWinterize((state) => state.currentPhase !== 'idle');
 export const useWinterizeSequence = () => useWinterize((state) => state.winterizeSequence);
+
+// New selectors for timestamp tracking
+export const useCurrentStepIndex = () => useWinterize((state) => state.currentStepIndex);
+export const useCurrentPhase = () => useWinterize((state) => state.currentPhase);
+export const usePhaseStartTime = () => useWinterize((state) => state.phaseStartTime);
+export const useSequenceStartTime = () => useWinterize((state) => state.sequenceStartTime);
 
 export const useWinterizeActions = () => useWinterize((state) => state.actions);
